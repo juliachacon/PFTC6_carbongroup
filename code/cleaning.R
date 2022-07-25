@@ -12,12 +12,12 @@ library("dataDownloader")
 #download and unzip files from OSF
 get_file(node = "pk4bg",
          file = "Three-D_24h-cflux_vikesland_2022.csv",
-         path = "RawData/C-Flux",
+         path = "raw_data",
          remote_path = "RawData/C-Flux")
 
 get_file(node = "pk4bg",
          file = "PFTC6_cflux_field-record_vikesland.csv",
-         path = "RawData/C-Flux",
+         path = "raw_data",
          remote_path = "RawData/C-Flux")
 
 # If you manage to download dataDownloader and download the data, you are good! Congrats!
