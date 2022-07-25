@@ -39,46 +39,40 @@ get_file(node = "pk4bg",
 
 # function to match CO2 concentration and turf ----------------------------
 
-match.flux3 <- function(raw_flux, field_record){
-  #some measurements were used both for LRC and flux measurements because lack of time or battery on the field
-  #that means we need to pick the CO2 concentration twice...
-  field_record_LRC <- filter(field_record,
-                             type == "LRC1"
-                             | type == "LRC2"
-                             | type == "LRC3" 
-                             | type == "LRC4" 
-                             | type == "LRC5"
-  )
-  field_record_fluxes <- filter(field_record,
-                                type == "ER"
-                                | type == "NEE"
-  )
+match.flux.PFTC <- function(raw_flux, field_record){
   
-  co2conc_LRC <- full_join(raw_flux, field_record_LRC, by = c("datetime" = "start"), keep = TRUE) %>% #joining both dataset in one
-    fill(PAR,temp_air,temp_soil, turfID,type,campaign,starting_time,date,start,end,start_window, end_window) %>% #filling all rows (except Remarks) with data from above
-    group_by(date, turfID, type) %>% #this part is to fill Remarks while keeping the NA (some fluxes have no remark)
-    fill(comments) %>% 
-    # mutate(ID = cur_group_id()) %>% #assigning a unique ID to each flux, useful for plotting uzw
-    ungroup() %>% 
+  raw_flux <- raw_flux %>% 
+    rename(
+      datetime = "Date/Time",
+      temp_air = "Temp_air ('C)",
+      temp_soil = "Temp_soil ('C)",
+      CO2 = "CO2 (ppm)",
+      PAR = "PAR (umolsm2)"
+    ) %>% 
+    mutate(
+      datetime = dmy_hms(datetime)
+    ) %>% 
+    select(datetime, temp_soil, temp_air, CO2, PAR)
+  
+  field_record <- field_record %>%
+  mutate(
+    starting_time = gsub("(\\d{2})(?=\\d{2})", "\\1:", starting_time, perl = TRUE), # to add the : in the time
+    date = dmy(date),
+    start = ymd_hms(paste(date, starting_time)), #converting the date as posixct, pasting date and starting time together
+    end = start + measurement, #creating column End
+    start_window = start + startcrop, #cropping the start
+    end_window = end - endcrop, #cropping the end of the measurement
+    fluxID = row_number()
+  ) %>% 
+    select(start, end, start_window, end_window, fluxID, turfID, type)
+  
+    
+  co2conc <- full_join(raw_flux, field_record, by = c("datetime" = "start"), keep = TRUE) %>% #joining both dataset in one
+    fill(PAR,temp_air, temp_soil, turfID,type,start,end,start_window, end_window, fluxID) %>% #filling all rows (except Remarks) with data from above
+   
     filter(
       datetime <= end
-      & datetime >= start) #%>% #cropping the part of the flux that is after the End and before the Start
-  # select(datetime, CO2, PAR, temp_air, plot_ID, type, replicate, campaign, ID, remarks, date)
-  co2conc_fluxes <- full_join(raw_flux, field_record_fluxes, by = c("datetime" = "start"), keep = TRUE) %>% #joining both dataset in one
-    fill(PAR,temp_air, temp_soil, turfID,type,campaign,starting_time,date,start,end,start_window, end_window) %>% #filling all rows (except Remarks) with data from above
-    group_by(date, turfID, type) %>% #this part is to fill Remarks while keeping the NA (some fluxes have no remark)
-    fill(comments) %>% 
-    # mutate(ID = cur_group_id()) %>% #assigning a unique ID to each flux, useful for plotting uzw
-    ungroup() %>% 
-    filter(
-      datetime <= end
-      & datetime >= start) #%>% #cropping the part of the flux that is after the End and before the Start
-  
-  co2conc <- full_join(co2conc_fluxes, co2conc_LRC) %>% 
-    group_by(date, turfID, type) %>% 
-    mutate(fluxID = cur_group_id()) %>% 
-    ungroup()
-  
+      & datetime >= start) %>% #cropping the part of the flux that is after the End and before the Start
   
   return(co2conc)
 }
@@ -96,22 +90,13 @@ endcrop <- 40 #how much to crop at the end of the measurement in seconds
 
 # cleaning Vikesland ------------------------------------------------------
 
-cflux_24h_vikesland <- read_csv("raw_data/Three-D_24h-cflux_vikesland_2022.csv")
+cflux_24h_vikesland <- read_csv("raw_data/Three-D_24h-cflux_vikesland_2022.csv", na = c("#N/A"))
+  
 
-record <- read_csv("raw_data/PFTC6_cflux_field-record_vikesland.csv", na = c("")) %>% 
-  drop_na(starting_time) %>% #delete row without starting time (meaning no measurement was done)
-  mutate(
-    starting_time = gsub("(\\d{2})(?=\\d{2})", "\\1:", starting_time, perl = TRUE),
-    date = dmy(date),
-    start = ymd_hms(paste(date, starting_time)), #converting the date as posixct, pasting date and starting time together
-    end = start + measurement, #creating column End
-    start_window = start + startcrop, #cropping the start
-    end_window = end - endcrop #cropping the end of the measurement
-  ) %>% 
-  select(!c(starting_time, date))
+record_vikesland <- read_csv("raw_data/PFTC6_cflux_field-record_vikesland.csv", na = c(""))
 
 #matching the CO2 concentration data with the turfs using the field record
-co2_fluxes <- match.flux3(fluxes,record)
+co2_fluxes_vikesland <- match.flux.PFTC(cflux_24h_vikesland,record_vikesland)
 
 
 
