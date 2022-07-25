@@ -3,6 +3,7 @@ title: "Readme"
 author: "Joseph Gaudard"
 date: '2022-06-14'
 output: github_document
+# output: pdf_document #in case we need to print it
 ---
 
 ```{r setup, include=FALSE}
