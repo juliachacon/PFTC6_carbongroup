@@ -5,15 +5,15 @@
 # Three-D https://osf.io/pk4bg/
 
 # re install data downloader
+install.packages("remotes")
 
-# remotes::install_github("nyuglobalties/osfr@fix/use-wb-asset-id")
+remotes::install_github("nyuglobalties/osfr@fix/use-wb-asset-id")
 
 #load libraries
 
 library("dataDownloader")
 library(tidyverse)
 library(lubridate)
-
 library(broom)
 # library(fs)
 # library(zoo)
@@ -44,7 +44,7 @@ get_file(node = "pk4bg",
 
 # functions ----------------------------
 
-match.flux.PFTC6 <- function(raw_flux, field_record){
+match.flux.PFTC6 <- function(raw_flux, field_record, window_length = 90, startcrop = 10, measurement_length = 210){
   
   raw_flux <- raw_flux %>% 
     rename( #rename the columns with easier names to handle in the code
@@ -60,26 +60,26 @@ match.flux.PFTC6 <- function(raw_flux, field_record){
     select(datetime, temp_soil, temp_air, CO2, PAR)
   
   field_record <- field_record %>%
-  mutate(
-    starting_time = gsub("(\\d{2})(?=\\d{2})", "\\1:", starting_time, perl = TRUE), # to add the : in the time
-    date = dmy(date), #date in R format
-    start = ymd_hms(paste(date, starting_time)), #pasting date and time together to make datetime
-    end = start + measurement, #creating column End
-    start_window = start + startcrop, #cropping the start
-    end_window = end - endcrop, #cropping the end of the measurement
-    fluxID = row_number() #adding an individual ID ot each flux, useful to join data or graph the fluxes
-  ) %>% 
+    mutate(
+      starting_time = gsub("(\\d{2})(?=\\d{2})", "\\1:", starting_time, perl = TRUE), # to add the : in the time
+      date = dmy(date), #date in R format
+      start = ymd_hms(paste(date, starting_time)), #pasting date and time together to make datetime
+      end = start + measurement_length, #creating column End
+      start_window = start + startcrop, #cropping the start
+      end_window = start_window + window_length, #cropping the end of the measurement
+      fluxID = row_number() #adding an individual ID ot each flux, useful to join data or graph the fluxes
+    ) %>% 
     select(start, end, start_window, end_window, fluxID, turfID, type, date)
   
-    
+  
   co2conc <- full_join(raw_flux, field_record, by = c("datetime" = "start"), keep = TRUE) %>% #joining both dataset in one
     fill(PAR,temp_air, temp_soil, turfID,type,start,end,start_window, end_window, fluxID, date) %>% #filling all rows with data from above
-   
+    
     filter(
       datetime <= end
       & datetime >= start) %>% #cropping the part of the flux that is after the End and before the Start
-  
-  return(co2conc)
+    
+    return(co2conc)
 }
 
 
@@ -142,16 +142,15 @@ flux.calc.PFTC6 <- function(co2conc, # dataset of CO2 concentration versus time 
 
 # define timing -----------------------------------------------------------
 
-measurement <- 210 #the length of the measurement taken on the field in seconds (we make it longer to make sure to also see what happened at the end of the flux)
-startcrop <- 10 #how much to crop at the beginning of the measurement in seconds
-endcrop <- 40 #how much to crop at the end of the measurement in seconds
+# measurement <- 210 #the length of the measurement taken on the field in seconds (we make it longer to make sure to also see what happened at the end of the flux)
+# startcrop <- 10 #how much to crop at the beginning of the measurement in seconds
+# endcrop <- 40 #how much to crop at the end of the measurement in seconds
 
 
 # cleaning Vikesland ------------------------------------------------------
 
 cflux_24h_vikesland <- read_csv("raw_data/Three-D_24h-cflux_vikesland_2022.csv", na = c("#N/A"))
   
-
 record_vikesland <- read_csv("raw_data/PFTC6_cflux_field-record_vikesland.csv", na = c(""))
 
 #matching the CO2 concentration data with the turfs using the field record
@@ -196,7 +195,8 @@ co2_cut_vikesland %>%
   scale_x_datetime(date_breaks = "1 min", minor_breaks = "10 sec", date_labels = "%e/%m \n %H:%M") +
   # scale_x_date(date_labels = "%H:%M:%S") +
   facet_wrap(vars(fluxID), ncol = 30, scales = "free")
-  ggsave("fluxes_details_vikesland.png", height = 40, width = 80, units = "cm")
+  
+ggsave("fluxes_details_vikesland.png", height = 40, width = 80, units = "cm")
 
 
 
