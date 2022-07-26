@@ -32,6 +32,11 @@ get_file(node = "pk4bg",
          path = "raw_data",
          remote_path = "RawData/C-Flux")
 
+get_file(node = "pk4bg",
+         file = "PFTC6_cflux_cutting_vikesland.csv",
+         path = "raw_data",
+         remote_path = "RawData/C-Flux")
+
 # If you manage to download dataDownloader and download the data, you are good! Congrats!
 # In case you did not manage to download the data manually. Call me :-)
 
@@ -152,7 +157,7 @@ record_vikesland <- read_csv("raw_data/PFTC6_cflux_field-record_vikesland.csv", 
 co2_fluxes_vikesland <- match.flux.PFTC6(cflux_24h_vikesland,record_vikesland)
 
 # cutting
-cutting_vikesland <- read_csv("raw_data/PFTC_cutting_vikesland.csv", na = "", col_types = "dtt")
+cutting_vikesland <- read_csv("raw_data/PFTC6_cflux_cutting_vikesland.csv", na = "", col_types = "dtt")
 
 co2_cut_vikesland <- co2_fluxes_vikesland %>% 
   left_join(cutting_vikesland, by = "fluxID") %>% 
@@ -198,24 +203,24 @@ co2_cut_vikesland %>%
 # will need to graph the NEE to check for negative and weird values
   
 # for ER we just look at the range
-  filter(co2_cut_vikesland, type == "ER") %>% #faster than looking at the graph!
-    summarise(
-      rangePAR = range(PAR)
-    )
-  
+  # filter(co2_cut_vikesland, type == "ER") %>% #faster than looking at the graph!
+  #   summarise(
+  #     rangePAR = range(PAR)
+  #   )
+  # 
 
 # clean soil temp ---------------------------------------------------------
 # will need to graph
 
 # in case we forgot to put the temp sensor in the ground 
-  co2_cut_vikesland <- co2_cut_vikesland %>% 
-    mutate(
-      temp_soil = case_when(
-        comments == "soilT logger not plugged in" ~ NA_real_,
-        comments == "Soil T NA" ~ NA_real_,
-        TRUE ~ temp_soil
-      )
-    )
+  # co2_cut_vikesland <- co2_cut_vikesland %>% 
+  #   mutate(
+  #     temp_soil = case_when(
+  #       comments == "soilT logger not plugged in" ~ NA_real_,
+  #       comments == "Soil T NA" ~ NA_real_,
+  #       TRUE ~ temp_soil
+  #     )
+  #   )
 
 
 # clean air temperature ---------------------------------------------------
@@ -223,12 +228,12 @@ co2_cut_vikesland %>%
 # will need to make a graph
 
 # calculate the fluxes ----------------------------------------------------
-
-  fluxes_vikesland <- flux.calc.PFTC6(co2_cut_vikesland) %>% 
-    mutate(
-      PARavg = case_when(
-        is.nan(PARavg) == TRUE ~ NA_real_, #mean(PAR) returned NaN when PAR was all NAs but it is missing values
-        TRUE ~ as.numeric(PARavg)
-      )
-    )
+# 
+#   fluxes_vikesland <- flux.calc.PFTC6(co2_cut_vikesland) %>% 
+#     mutate(
+#       PARavg = case_when(
+#         is.nan(PARavg) == TRUE ~ NA_real_, #mean(PAR) returned NaN when PAR was all NAs but it is missing values
+#         TRUE ~ as.numeric(PARavg)
+#       )
+#     )
 
