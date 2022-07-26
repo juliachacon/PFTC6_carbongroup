@@ -246,8 +246,6 @@ co2_cut_vikesland_40 <- co2_cut_vikesland_40 %>%
     cut = as_factor(cut)
   )
 
-
-
 # we can now graph independently each of the three graphs...
 # we are now visualizing only the 90 one, but you can change the one to display manually
 
@@ -261,32 +259,45 @@ co2_cut_vikesland_90 %>%
   # scale_x_date(date_labels = "%H:%M:%S") +
   facet_wrap(vars(fluxID), ncol = 30, scales = "free")
   
-ggsave("fluxes_details_vikesland.png", height = 40, width = 80, units = "cm")
+# ggsave("fluxes_details_vikesland.png", height = 40, width = 80, units = "cm")
 
-
+co2_cut_90_keep <- filter(co2_cut_vikesland_90,
+                  cut == "keep")  #to keep only the part we want to keep
+                    
 
 # cleaning PAR --------------------------------------------------------------
 # will need to graph the NEE to check for negative and weird values
   
-# for ER we just look at the range
-  # filter(co2_cut_vikesland, type == "ER") %>% #faster than looking at the graph!
-  #   summarise(
-  #     rangePAR = range(PAR)
-  #   )
-  # 
+
+# for ER we look at the range of PAR to see if there are errors
+   filter(co2_cut_90_keep, type == "ER") %>% #faster than looking at the graph!
+     summarise(
+     rangePAR = range(PAR)
+     )
+
+# visualize PAR levels
+
+filt_ER_90 <- filter(co2_cut_90_keep, type == "ER") # I am just filtering to make things easier
+plot(filt_ER_90$PAR) # Plot the PAR
+unique(filt_ER_90[filt_ER_90$PAR>60,]$fluxID) # identify the weird values 
+range(filt_ER_90[filt_ER_90$PAR>60,]$PAR) # and the PAR levels (no big deal)
+unique(filt_ER_90[filt_ER_90$PAR>60,]$datetime) # who was on the field at this time...
+
+## Summarizing we had some problems in plots 221,223,225 and 227 around 17:00 but the CO2 levels look good, so no big deal 
+
 
 # clean soil temp ---------------------------------------------------------
 # will need to graph
 
 # in case we forgot to put the temp sensor in the ground 
-  # co2_cut_vikesland <- co2_cut_vikesland %>% 
+ #  co2_cut_vikesland <- co2_cut_90_keep %>% 
   #   mutate(
   #     temp_soil = case_when(
   #       comments == "soilT logger not plugged in" ~ NA_real_,
-  #       comments == "Soil T NA" ~ NA_real_,
-  #       TRUE ~ temp_soil
-  #     )
-  #   )
+   #      comments == "Soil T NA" ~ NA_real_,
+   #      TRUE ~ temp_soil
+   #    )
+   #  )
 
 
 # clean air temperature ---------------------------------------------------
