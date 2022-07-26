@@ -153,21 +153,45 @@ cflux_24h_vikesland <- read_csv("raw_data/Three-D_24h-cflux_vikesland_2022.csv",
   
 record_vikesland <- read_csv("raw_data/PFTC6_cflux_field-record_vikesland.csv", na = c(""))
 
-#matching the CO2 concentration data with the turfs using the field record
-co2_fluxes_vikesland <- match.flux.PFTC6(cflux_24h_vikesland,record_vikesland)
+# matching the CO2 concentration data with the turfs using the field record
+# we have defined three window lenghts 90, 60 and 40 secs.
+# so, we create three files:
+
+co2_fluxes_vikesland_90 <- match.flux.PFTC6(cflux_24h_vikesland, record_vikesland)
+
+co2_fluxes_vikesland_60 <- match.flux.PFTC6(cflux_24h_vikesland, record_vikesland, window_length = 60)
+
+co2_fluxes_vikesland_40 <- match.flux.PFTC6(cflux_24h_vikesland, record_vikesland, window_length = 40)
 
 # cutting
+# we now do three cuts, with the previous files; so we are going to end up with three files again (one per window length)
 cutting_vikesland <- read_csv("raw_data/PFTC6_cflux_cutting_vikesland.csv", na = "", col_types = "dtt")
 
-co2_cut_vikesland <- co2_fluxes_vikesland %>% 
+co2_cut_vikesland_90 <- co2_fluxes_vikesland_90 %>% 
   left_join(cutting_vikesland, by = "fluxID") %>% 
   mutate(
     start_cut = ymd_hms(paste(date, .$start_cut)),
     end_cut = ymd_hms(paste(date, .$end_cut))
   )
 
+co2_cut_vikesland_60 <- co2_fluxes_vikesland_60 %>% 
+  left_join(cutting_vikesland, by = "fluxID") %>% 
+  mutate(
+    start_cut = ymd_hms(paste(date, .$start_cut)),
+    end_cut = ymd_hms(paste(date, .$end_cut))
+  )
+
+co2_cut_vikesland_40 <- co2_fluxes_vikesland_40 %>% 
+  left_join(cutting_vikesland, by = "fluxID") %>% 
+  mutate(
+    start_cut = ymd_hms(paste(date, .$start_cut)),
+    end_cut = ymd_hms(paste(date, .$end_cut))
+  )
+
+
 # adjusting the time window with manual cuts
-co2_cut_vikesland <- co2_cut_vikesland %>%
+# again three times (90,60,40)
+co2_cut_vikesland_90 <- co2_cut_vikesland_90 %>%
   mutate(
   start_window = case_when(
     is.na(start_cut) == FALSE ~ start_cut,
@@ -185,10 +209,49 @@ co2_cut_vikesland <- co2_cut_vikesland %>%
   cut = as_factor(cut)
   )
 
-# graph
+
+co2_cut_vikesland_60 <- co2_cut_vikesland_60 %>%
+  mutate(
+    start_window = case_when(
+      is.na(start_cut) == FALSE ~ start_cut,
+      TRUE ~ start_window
+    ),
+    end_window = case_when(
+      is.na(end_cut) == FALSE ~ end_cut,
+      TRUE ~ end_window
+    ),
+    cut = case_when(
+      datetime <= start_window | datetime >= end_window ~ "cut",
+      # fluxID ==  & datetime %in%  ~ "cut",
+      TRUE ~ "keep"
+    ),
+    cut = as_factor(cut)
+  )
+
+co2_cut_vikesland_40 <- co2_cut_vikesland_40 %>%
+  mutate(
+    start_window = case_when(
+      is.na(start_cut) == FALSE ~ start_cut,
+      TRUE ~ start_window
+    ),
+    end_window = case_when(
+      is.na(end_cut) == FALSE ~ end_cut,
+      TRUE ~ end_window
+    ),
+    cut = case_when(
+      datetime <= start_window | datetime >= end_window ~ "cut",
+      # fluxID ==  & datetime %in%  ~ "cut",
+      TRUE ~ "keep"
+    ),
+    cut = as_factor(cut)
+  )
+
+# we can now graph independently each of the three graphs...
+# we are now visualizing only the 90 one, but you can change the one to display manually
+
 theme_set(theme_grey(base_size = 5)) 
 
-co2_cut_vikesland %>% 
+co2_cut_vikesland_90 %>% 
   ggplot(aes(x = datetime, y = CO2, colour = cut)) +
   geom_line(size = 0.2, aes(group = fluxID)) +
   # geom_line(size = 0.2) +
@@ -196,32 +259,45 @@ co2_cut_vikesland %>%
   # scale_x_date(date_labels = "%H:%M:%S") +
   facet_wrap(vars(fluxID), ncol = 30, scales = "free")
   
-ggsave("fluxes_details_vikesland.png", height = 40, width = 80, units = "cm")
+# ggsave("fluxes_details_vikesland.png", height = 40, width = 80, units = "cm")
 
-
+co2_cut_90_keep <- filter(co2_cut_vikesland_90,
+                  cut == "keep")  #to keep only the part we want to keep
+                    
 
 # cleaning PAR --------------------------------------------------------------
 # will need to graph the NEE to check for negative and weird values
   
-# for ER we just look at the range
-  # filter(co2_cut_vikesland, type == "ER") %>% #faster than looking at the graph!
-  #   summarise(
-  #     rangePAR = range(PAR)
-  #   )
-  # 
+
+# for ER we look at the range of PAR to see if there are errors
+   filter(co2_cut_90_keep, type == "ER") %>% #faster than looking at the graph!
+     summarise(
+     rangePAR = range(PAR)
+     )
+
+# visualize PAR levels
+
+filt_ER_90 <- filter(co2_cut_90_keep, type == "ER") # I am just filtering to make things easier
+plot(filt_ER_90$PAR) # Plot the PAR
+unique(filt_ER_90[filt_ER_90$PAR>60,]$fluxID) # identify the weird values 
+range(filt_ER_90[filt_ER_90$PAR>60,]$PAR) # and the PAR levels (no big deal)
+unique(filt_ER_90[filt_ER_90$PAR>60,]$datetime) # who was on the field at this time...
+
+## Summarizing we had some problems in plots 221,223,225 and 227 around 17:00 but the CO2 levels look good, so no big deal 
+
 
 # clean soil temp ---------------------------------------------------------
 # will need to graph
 
 # in case we forgot to put the temp sensor in the ground 
-  # co2_cut_vikesland <- co2_cut_vikesland %>% 
+ #  co2_cut_vikesland <- co2_cut_90_keep %>% 
   #   mutate(
   #     temp_soil = case_when(
   #       comments == "soilT logger not plugged in" ~ NA_real_,
-  #       comments == "Soil T NA" ~ NA_real_,
-  #       TRUE ~ temp_soil
-  #     )
-  #   )
+   #      comments == "Soil T NA" ~ NA_real_,
+   #      TRUE ~ temp_soil
+   #    )
+   #  )
 
 
 # clean air temperature ---------------------------------------------------
