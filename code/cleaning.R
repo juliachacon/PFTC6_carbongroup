@@ -249,16 +249,16 @@ co2_cut_vikesland_40 <- co2_cut_vikesland_40 %>%
 # we can now graph independently each of the three graphs...
 # we are now visualizing only the 90 one, but you can change the one to display manually
 
-theme_set(theme_grey(base_size = 5)) 
-
-co2_cut_vikesland_90 %>% 
-  ggplot(aes(x = datetime, y = CO2, colour = cut)) +
-  geom_line(size = 0.2, aes(group = fluxID)) +
-  # geom_line(size = 0.2) +
-  scale_x_datetime(date_breaks = "1 min", minor_breaks = "10 sec", date_labels = "%e/%m \n %H:%M") +
-  # scale_x_date(date_labels = "%H:%M:%S") +
-  facet_wrap(vars(fluxID), ncol = 30, scales = "free")
-  
+# theme_set(theme_grey(base_size = 5)) 
+# 
+# co2_cut_vikesland_90 %>% 
+#   ggplot(aes(x = datetime, y = CO2, colour = cut)) +
+#   geom_line(size = 0.2, aes(group = fluxID)) +
+#   # geom_line(size = 0.2) +
+#   scale_x_datetime(date_breaks = "1 min", minor_breaks = "10 sec", date_labels = "%e/%m \n %H:%M") +
+#   # scale_x_date(date_labels = "%H:%M:%S") +
+#   facet_wrap(vars(fluxID), ncol = 30, scales = "free")
+#   
 # ggsave("fluxes_details_vikesland.png", height = 40, width = 80, units = "cm")
 
 co2_cut_90_keep <- filter(co2_cut_vikesland_90,
