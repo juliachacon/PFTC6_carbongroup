@@ -113,4 +113,8 @@ filt_ER_90 %>% filter(fluxID == "227") %>%
   ggplot(aes(x = datetime, y = PAR)) +
   geom_point()
 
-# and now what should we do?
+
+# ... what should we do now??
+# 1. think about weird PAR values. what could be happening, and how to solve it? (Discuss in class)
+# 2. we should also manually modify the cuts for those curve that does not look fine with the automatic cuts.
+
