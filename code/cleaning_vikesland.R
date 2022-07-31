@@ -27,14 +27,14 @@ get_file(node = "pk4bg",
 
 # cleaning Vikesland ------------------------------------------------------
 # read the files
-cflux_24h_vikesland <- read_csv("raw_data/Three-D_24h-cflux_vikesland_2022.csv", na = c("#N/A"))
+co2_24h_vikesland <- read_csv("raw_data/Three-D_24h-cflux_vikesland_2022.csv", na = c("#N/A"))
   
 record_vikesland <- read_csv("raw_data/PFTC6_cflux_field-record_vikesland.csv", na = c(""))
 
 # matching the CO2 concentration data with the turfs using the field record
 # we have defined a default window length of 90 secs.
 
-co2_fluxes_vikesland_90 <- match.flux.PFTC6(cflux_24h_vikesland, record_vikesland, window_length = 90)
+co2_fluxes_vikesland_90 <- match.flux.PFTC6(co2_24h_vikesland, record_vikesland, window_length = 90)
 
 # cutting Vikesland ------------------------------------------------------
 cutting_vikesland <- read_csv("raw_data/PFTC6_cflux_cutting_vikesland.csv", na = "", col_types = "dtt")
@@ -82,6 +82,9 @@ co2_cut_vikesland_90 <- co2_cut_vikesland_90 %>%
 #   
 # ggsave("fluxes_details_vikesland.png", height = 40, width = 80, units = "cm")
 
+
+# produce clean CO2 cut --------------------------------------------------------
+
 co2_cut_90_keep <- filter(co2_cut_vikesland_90,
                   cut == "keep")  #to keep only the part we want to keep
 
@@ -117,4 +120,13 @@ filt_ER_90 %>% filter(fluxID == "227") %>%
 # ... what should we do now??
 # 1. think about weird PAR values. what could be happening, and how to solve it? (Discuss in class)
 # 2. we should also manually modify the cuts for those curve that does not look fine with the automatic cuts.
+
+
+
+# calculation of fluxes ---------------------------------------------------
+
+cflux_vikesland <- co2_cut_90_keep %>% 
+  flux.calc.PFTC6()
+
+write_csv(cflux_vikesland, "clean_data/Three-D_24h-cflux_vikesland_2022.csv")
 
