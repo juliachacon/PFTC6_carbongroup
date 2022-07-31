@@ -34,7 +34,7 @@ record_vikesland <- read_csv("raw_data/PFTC6_cflux_field-record_vikesland.csv", 
 # matching the CO2 concentration data with the turfs using the field record
 # we have defined a default window length of 90 secs.
 
-co2_fluxes_vikesland_90 <- match.flux.PFTC6(cflux_24h_vikesland, record_vikesland, window_length = 90)
+co2_fluxes_vikesland_90 <- match.flux.PFTC6(co2_24h_vikesland, record_vikesland, window_length = 90)
 
 # cutting Vikesland ------------------------------------------------------
 cutting_vikesland <- read_csv("raw_data/PFTC6_cflux_cutting_vikesland.csv", na = "", col_types = "dtt")
