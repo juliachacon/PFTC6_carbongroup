@@ -54,7 +54,7 @@ make_data_dictionary <- function(data, description_table){
 # data description ------------------------------------------------------------
 description <- read_csv("code/data_dic/data_dic.csv")
 
-# c-flux ------------------------------------------------------------------
+# metadata turf ------------------------------------------------------------------
 metadata_dic <- make_data_dictionary(data = metadata,
                                   description_table = description
 )
