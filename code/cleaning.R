@@ -4,6 +4,7 @@
 source("code/functions.R")
 library("dataDownloader")
 
+# download raw data
 # download files from OSF ---------------------------------------
 
 get_file(node = "pk4bg",
