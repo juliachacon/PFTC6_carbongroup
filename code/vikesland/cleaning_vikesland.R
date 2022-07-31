@@ -99,11 +99,25 @@ filter(co2_cut_60_keep, type == "ER") %>% #faster than looking at the graph!
 # visualize PAR levels
 
 filt_ER_60 <- filter(co2_cut_60_keep, type == "ER") # I am just filtering to make things easier
+
 plot(filt_ER_60$PAR) # Plot the PAR values
 plot(x= filt_ER_60$datetime, y= filt_ER_60$PAR) # Plot the PAR vs time
-unique(filt_ER_60[filt_ER_60$PAR>60,]$fluxID) # identify the weird values 
-range(filt_ER_60[filt_ER_60$PAR>60,]$PAR) # and the PAR levels (no big deal)
-unique(filt_ER_60[filt_ER_60$PAR>60,]$datetime) # who was on the field at this time...
+abline(h=0, col="red")
+
+# now we are 
+co2_cut_60_keep <- co2_cut_60_keep %>% 
+  mutate(
+    PAR =
+  case_when(
+    type=="ER" & PAR <= 0 ~ 0, 
+    TRUE~PAR
+    )
+  )
+
+
+#unique(filt_ER_60[filt_ER_60$PAR > 60,]$fluxID) # identify the weird values 
+#range(filt_ER_60[filt_ER_60$PAR > 60,]$PAR) # and the PAR levels (no big deal)
+#unique(filt_ER_60[filt_ER_60$PAR > 60,]$datetime) # who was on the field at this time...
 
 # for ER we look at the range of PAR to see if there are errors
 filter(co2_cut_60_keep, type == "ER") %>% #faster than looking at the graph!
