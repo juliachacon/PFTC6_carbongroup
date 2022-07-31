@@ -8,17 +8,17 @@ library("dataDownloader")
 # download files from OSF ---------------------------------------
 
 get_file(node = "pk4bg",
-         file = "Three-D_24h-cflux_vikesland_2022.csv",
+         file = "Three-D_24h-cflux_liahovden_2022.csv",
          path = "raw_data",
          remote_path = "RawData/C-Flux")
 
 get_file(node = "pk4bg",
-         file = "PFTC6_cflux_field-record_vikesland.csv",
+         file = "PFTC6_cflux_field-record_liahovden.csv",
          path = "raw_data",
          remote_path = "RawData/C-Flux")
 
 get_file(node = "pk4bg",
-         file = "PFTC6_cflux_cutting_vikesland.csv",
+         file = "PFTC6_cflux_cutting_liahovden.csv",
          path = "raw_data",
          remote_path = "RawData/C-Flux")
 

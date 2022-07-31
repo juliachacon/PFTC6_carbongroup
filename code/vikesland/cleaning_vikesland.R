@@ -119,6 +119,13 @@ co2_cut_60_keep <- co2_cut_60_keep %>%
 #range(filt_ER_60[filt_ER_60$PAR > 60,]$PAR) # and the PAR levels (no big deal)
 #unique(filt_ER_60[filt_ER_60$PAR > 60,]$datetime) # who was on the field at this time...
 
+co2_cut_60_keep %>% 
+  filter(
+    type == "NEE"
+  ) %>% 
+  ggplot(aes(datetime, PAR)) +
+  geom_point()
+
 # for ER we look at the range of PAR to see if there are errors
 filter(co2_cut_60_keep, type == "ER") %>% #faster than looking at the graph!
   summarise(
