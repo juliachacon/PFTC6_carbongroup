@@ -9,6 +9,7 @@ get_file(node = "pk4bg",
          path = "clean_data",
          remote_path = "Site")
 
-metadata <- read_csv("data_clean/Three-D_metaturfID.csv")
+metadata <- read_csv("clean_data/Three-D_metaturfID.csv") %>% 
+  select(warming, turfID)
 
 
