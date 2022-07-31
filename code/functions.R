@@ -5,6 +5,8 @@
 
 library(tidyverse)
 library(lubridate)
+library(broom)
+
 
 # functions ----------------------------
 
