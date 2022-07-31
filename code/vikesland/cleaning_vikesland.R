@@ -32,14 +32,14 @@ co2_24h_vikesland <- read_csv("raw_data/Three-D_24h-cflux_vikesland_2022.csv", n
 record_vikesland <- read_csv("raw_data/PFTC6_cflux_field-record_vikesland.csv", na = c(""))
 
 # matching the CO2 concentration data with the turfs using the field record
-# we have defined a default window length of 90 secs.
+# we have defined a default window length of 60 secs.
 
-co2_fluxes_vikesland_90 <- match.flux.PFTC6(co2_24h_vikesland, record_vikesland, window_length = 90)
+co2_fluxes_vikesland_60 <- match.flux.PFTC6(co2_24h_vikesland, record_vikesland, window_length = 60)
 
 # cutting Vikesland ------------------------------------------------------
 cutting_vikesland <- read_csv("raw_data/PFTC6_cflux_cutting_vikesland.csv", na = "", col_types = "dtt")
 
-co2_cut_vikesland_90 <- co2_fluxes_vikesland_90 %>% 
+co2_cut_vikesland_60 <- co2_fluxes_vikesland_60 %>% 
   left_join(cutting_vikesland, by = "fluxID") %>% 
   mutate(
     start_cut = ymd_hms(paste(date, .$start_cut)),
@@ -48,7 +48,7 @@ co2_cut_vikesland_90 <- co2_fluxes_vikesland_90 %>%
 
 # adjusting the time window with manual cuts ------------------------------------------------------
 
-co2_cut_vikesland_90 <- co2_cut_vikesland_90 %>%
+co2_cut_vikesland_60 <- co2_cut_vikesland_60 %>%
   mutate(
   start_window = case_when(
     is.na(start_cut) == FALSE ~ start_cut,
@@ -68,51 +68,51 @@ co2_cut_vikesland_90 <- co2_cut_vikesland_90 %>%
 
 # vizz Vikesland -------------------------------------------------------
 
-# visualizing 90 secs cuts in Vikesland (it´s in comments, just in case you don´t want to visualize it)
+# visualizing 60 secs cuts in Vikesland (it´s in comments, just in case you don´t want to visualize it)
 
-# theme_set(theme_grey(base_size = 5)) 
-# 
-# co2_cut_vikesland_90 %>% 
-#   ggplot(aes(x = datetime, y = CO2, colour = cut)) +
-#   geom_line(size = 0.2, aes(group = fluxID)) +
-#   # geom_line(size = 0.2) +
-#   scale_x_datetime(date_breaks = "1 min", minor_breaks = "10 sec", date_labels = "%e/%m \n %H:%M") +
-#   # scale_x_date(date_labels = "%H:%M:%S") +
-#   facet_wrap(vars(fluxID), ncol = 30, scales = "free")
-#   
+theme_set(theme_grey(base_size = 5))
+
+co2_cut_vikesland_60 %>%
+  ggplot(aes(x = datetime, y = CO2, colour = cut)) +
+  geom_line(size = 0.2, aes(group = fluxID)) +
+  # geom_line(size = 0.2) +
+  scale_x_datetime(date_breaks = "1 min", minor_breaks = "10 sec", date_labels = "%e/%m \n %H:%M") +
+  # scale_x_date(date_labels = "%H:%M:%S") +
+  facet_wrap(vars(fluxID), ncol = 30, scales = "free")
+
 # ggsave("fluxes_details_vikesland.png", height = 40, width = 80, units = "cm")
 
 
 # produce clean CO2 cut --------------------------------------------------------
 
-co2_cut_90_keep <- filter(co2_cut_vikesland_90,
+co2_cut_60_keep <- filter(co2_cut_vikesland_60,
                   cut == "keep")  #to keep only the part we want to keep
 
 # cleaning PAR --------------------------------------------------------------
 
 # for ER we look at the range of PAR to see if there are errors
-filter(co2_cut_90_keep, type == "ER") %>% #faster than looking at the graph!
+filter(co2_cut_60_keep, type == "ER") %>% #faster than looking at the graph!
   summarise(
     rangePAR = range(PAR)
   )
 
 # visualize PAR levels
 
-filt_ER_90 <- filter(co2_cut_90_keep, type == "ER") # I am just filtering to make things easier
-plot(filt_ER_90$PAR) # Plot the PAR values
-plot(x= filt_ER_90$datetime, y= filt_ER_90$PAR) # Plot the PAR vs time
-unique(filt_ER_90[filt_ER_90$PAR>60,]$fluxID) # identify the weird values 
-range(filt_ER_90[filt_ER_90$PAR>60,]$PAR) # and the PAR levels (no big deal)
-unique(filt_ER_90[filt_ER_90$PAR>60,]$datetime) # who was on the field at this time...
+filt_ER_60 <- filter(co2_cut_60_keep, type == "ER") # I am just filtering to make things easier
+plot(filt_ER_60$PAR) # Plot the PAR values
+plot(x= filt_ER_60$datetime, y= filt_ER_60$PAR) # Plot the PAR vs time
+unique(filt_ER_60[filt_ER_60$PAR>60,]$fluxID) # identify the weird values 
+range(filt_ER_60[filt_ER_60$PAR>60,]$PAR) # and the PAR levels (no big deal)
+unique(filt_ER_60[filt_ER_60$PAR>60,]$datetime) # who was on the field at this time...
 
 # for ER we look at the range of PAR to see if there are errors
-filter(co2_cut_90_keep, type == "ER") %>% #faster than looking at the graph!
+filter(co2_cut_60_keep, type == "ER") %>% #faster than looking at the graph!
   summarise(
     rangePAR = range(PAR)
   )
 
 # check here in detail what happened in the plots with weird PAR values
-filt_ER_90 %>% filter(fluxID == "227") %>% 
+filt_ER_60 %>% filter(fluxID == "227") %>% 
   ggplot(aes(x = datetime, y = PAR)) +
   geom_point()
 
@@ -125,7 +125,7 @@ filt_ER_90 %>% filter(fluxID == "227") %>%
 
 # calculation of fluxes ---------------------------------------------------
 
-cflux_vikesland <- co2_cut_90_keep %>% 
+cflux_vikesland <- co2_cut_60_keep %>% 
   flux.calc.PFTC6()
 
 write_csv(cflux_vikesland, "clean_data/Three-D_24h-cflux_vikesland_2022.csv")
