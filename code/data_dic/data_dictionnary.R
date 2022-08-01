@@ -58,3 +58,8 @@ description <- read_csv("code/data_dic/data_dic.csv")
 metadata_dic <- make_data_dictionary(data = metadata,
                                   description_table = description
 )
+
+# cflux ------------------------------------------------------------------
+cflux_vikesland_dic <- make_data_dictionary(data = cflux_vikesland,
+                                     description_table = description
+)
