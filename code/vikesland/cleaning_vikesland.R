@@ -147,9 +147,109 @@ plot(x= filt_NEE_60$datetime, y= filt_NEE_60$PAR,
      col = alpha("blue", 0.1), pch=16,
 ) # Plot the PAR vs time
 
-abline(h=0, col="red")
+abline(h = 0, col="blue")
 
-####
+# now we are replacing negative and odd PAR values in type = NEE by NA values
+
+
+theme_set(theme_grey(base_size = 5))
+
+filt_NEE_60 %>%
+  ggplot(aes(x = datetime, y = PAR, colour = cut)) +
+  geom_point(size = 0.2, aes(group = fluxID)) +
+  # geom_line(size = 0.2) +
+  scale_x_datetime(date_breaks = "1 min", minor_breaks = "10 sec", date_labels = "%e/%m \n %H:%M") +
+  # scale_x_date(date_labels = "%H:%M:%S") +
+  facet_wrap(vars(fluxID), ncol = 30, scales = "free")
+
+
+co2_cut_60_keep <- co2_cut_60_keep %>% 
+  mutate(
+    PAR =
+      case_when(
+          fluxID == "195"
+          ~ NA_real_, 
+        TRUE~PAR
+      )
+  )
+
+
+co2_cut_60_keep <- co2_cut_60_keep %>% 
+  mutate(
+    PAR =
+      case_when(
+        fluxID == "143"
+        ~ NA_real_, 
+        TRUE~PAR
+      )
+  )
+
+
+co2_cut_60_keep <- co2_cut_60_keep %>% 
+  mutate(
+    PAR =
+      case_when(
+        fluxID == "153"
+        ~ NA_real_, 
+        TRUE~PAR
+      )
+  )
+
+co2_cut_60_keep <- co2_cut_60_keep %>% 
+  mutate(
+    PAR =
+      case_when(
+        fluxID == "155"
+        ~ NA_real_, 
+        TRUE~PAR
+      )
+  )
+
+co2_cut_60_keep <- co2_cut_60_keep %>% 
+  mutate(
+    PAR =
+      case_when(
+        fluxID == "177"
+        ~ NA_real_, 
+        TRUE~PAR
+      )
+  )
+
+co2_cut_60_keep <- co2_cut_60_keep %>% 
+  mutate(
+    PAR =
+      case_when(
+        fluxID == "179"
+        ~ NA_real_, 
+        TRUE~PAR
+      )
+  )
+
+co2_cut_60_keep <- co2_cut_60_keep %>% 
+  mutate(
+    PAR =
+      case_when(
+        fluxID == "161" & PAR < 50
+        ~ NA_real_, 
+        TRUE~PAR
+      )
+  )
+
+
+
+filt_NEE_60 <- filter(co2_cut_60_keep, type == "NEE") # I am just filtering to make things easier
+
+# quick plot
+plot(filt_NEE_60$PAR) # Plot the PAR values
+plot(x= filt_NEE_60$datetime, y= filt_NEE_60$PAR,
+     xlab = "Time of the day (hours)", 
+     ylab = "Photosynthetically active radiation (PAR)",
+     col = alpha("blue", 0.1), pch=16,
+) # Plot the PAR vs time
+
+abline(h = 0, col="blue")
+
+#### same plots with ggplot coding
 
 co2_cut_60_keep %>% 
   filter(
