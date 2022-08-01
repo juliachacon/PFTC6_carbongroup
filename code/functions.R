@@ -33,6 +33,7 @@ match.flux.PFTC6 <- function(raw_flux, field_record, window_length = 90, startcr
   
   field_record <- field_record %>%
     mutate(
+      starting_time = gsub("^([0-9]{1,5})", "0\\1",starting_time), #if the time is 5 digits it adds a 0 in front of it
       starting_time = gsub("(\\d{2})(?=\\d{2})", "\\1:", starting_time, perl = TRUE), # to add the : in the time
       date = case_when(
         # !is.na(ymd(date)) ~ ymd(date),
