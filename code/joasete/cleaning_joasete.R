@@ -14,6 +14,11 @@ get_file(node = "pk4bg",
          remote_path = "RawData/C-Flux")
 
 get_file(node = "pk4bg",
+         file = "Three-D_24h-cflux_joasete_2_2022.csv",
+         path = "raw_data",
+         remote_path = "RawData/C-Flux")
+
+get_file(node = "pk4bg",
          file = "PFTC6_cflux_field-record_joasete.csv",
          path = "raw_data",
          remote_path = "RawData/C-Flux")
@@ -28,14 +33,48 @@ get_file(node = "pk4bg",
 
 # cleaning Vikesland ------------------------------------------------------
 # read the files
-co2_24h_joasete <- read_csv("raw_data/Three-D_24h-cflux_joasete_2022.csv", na = c("#N/A"))
+# Joasete was done in two times because of a licor failure
+co2_24h_joasete <- read_csv("raw_data/Three-D_24h-cflux_joasete_2022.csv", na = c("#N/A"), col_types = "cfdddddd") %>% 
+  bind_rows(
+    read_csv("raw_data/Three-D_24h-cflux_joasete_2_2022.csv", na = c("#N/A"), col_types = "cfdddddd")
+  )
   
 record_joasete <- read_csv("raw_data/PFTC6_cflux_field-record_joasete.csv", na = c(""))
+
+# at Joasete, turfID 29 WN3C 106 and 109 AN3C 109 were swapped between 2022-07-28 11:20:00 and 2022-07-29 00:30:00
+
+record_joasete <- record_joasete %>% 
+  mutate(
+    starting_time = as.numeric(starting_time),
+    turfID_correct = case_when(
+      starting_time >= 112000
+      & date == "2022-07-28"
+      & turfID == "29 WN3C 106"
+      ~ "109 AN3C 109",
+      starting_time <= 003000
+      & date == "2022-07-29"
+      & turfID == "29 WN3C 106"
+      ~ "109 AN3C 109",
+      starting_time >= 112000
+      & date == "2022-07-28"
+      & turfID == "109 AN3C 109"
+      ~ "29 WN3C 106",
+      starting_time <= 003000
+      & date == "2022-07-29"
+      & turfID == "109 AN3C 109"
+      ~ "29 WN3C 106",
+      TRUE ~ turfID
+    )
+  ) %>% 
+  select(!turfID) %>% 
+  rename(
+    turfID = "turfID_correct"
+  )
 
 # matching the CO2 concentration data with the turfs using the field record
 # we have defined a default window length of 90 secs.
 
-co2_fluxes_joasete_90 <- match.flux.PFTC6(co2_24h_joasete, record_joasete, window_length = 90)
+co2_fluxes_joasete_90 <- match.flux.PFTC6(co2_24h_joasete, record_joasete, window_length = 90, date_format = "ymd")
 
 # cutting Vikesland ------------------------------------------------------
 cutting_joasete <- read_csv("raw_data/PFTC6_cflux_cutting_joasete.csv", na = "", col_types = "dtt")
@@ -66,6 +105,7 @@ co2_cut_joasete_90 <- co2_cut_joasete_90 %>%
     ),
   cut = as_factor(cut)
   )
+
 
 # vizz Vikesland -------------------------------------------------------
 
