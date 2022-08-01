@@ -236,7 +236,6 @@ co2_cut_60_keep <- co2_cut_60_keep %>%
   )
 
 
-
 filt_NEE_60 <- filter(co2_cut_60_keep, type == "NEE") # I am just filtering to make things easier
 
 # quick plot
