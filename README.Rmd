@@ -8,7 +8,7 @@ output: github_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
-source("code/data_dic/data_dictionnary.R")
+# source("code/data_dic/data_dictionnary.R")
 ```
 
 # Introduction
@@ -21,8 +21,15 @@ Net Ecosystem Exchange (NEE) and Ecosystem Respiration (ER) along with Photosynt
 ### Vikesland
 
 
+```{r, echo=FALSE}
+knitr::kable(cflux_vikesland_dic)
+```
+
 
 # Figures
+```{r, echo=FALSE, fig.align='left', fig.cap=""}
+# graph
+```
 
 # Field measurements
 
