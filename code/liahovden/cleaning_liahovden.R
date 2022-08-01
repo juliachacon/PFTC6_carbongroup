@@ -29,21 +29,14 @@ get_file(node = "pk4bg",
 # cleaning liahovden ------------------------------------------------------
 # read the files
 co2_24h_liahovden <- read_csv("raw_data/Three-D_24h-cflux_liahovden_2022.csv", na = c("#N/A"))
-<<<<<<< HEAD
-  
-=======
 
->>>>>>> 708b596bbaceff17158f798717cc3dbbb59588e4
 record_liahovden <- read_csv("raw_data/PFTC6_cflux_field-record_liahovden.csv", na = c(""))
 
 # matching the CO2 concentration data with the turfs using the field record
 # we have defined a default window length of 60 secs.
 
-<<<<<<< HEAD
-co2_fluxes_liahovden_90 <- match.flux.PFTC6(co2_24h_vikesland, record_vikesland, window_length = 90)
-=======
+
 co2_fluxes_liahovden_60 <- match.flux.PFTC6(co2_24h_liahovden, record_liahovden, window_length = 60)
->>>>>>> 708b596bbaceff17158f798717cc3dbbb59588e4
 
 # cutting liahovden ------------------------------------------------------
 cutting_liahovden <- read_csv("raw_data/PFTC6_cflux_cutting_liahovden.csv", na = "", col_types = "dtt")
