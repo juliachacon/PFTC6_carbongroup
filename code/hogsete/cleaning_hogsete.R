@@ -31,6 +31,9 @@ get_file(node = "pk4bg",
 co2_24h_hogsete <- read_csv("raw_data/Three-D_24h_c-flux_hogsete_2022.csv", na = c("#N/A"))
 
 record_hogsete <- read_csv("raw_data/PFTC6_cflux_field-record_hogsete.csv", na = c(""))
+record_hogsete$turfID <- sub("^", "TTC ", record_hogsete$turfID)
+
+
 
 # matching the CO2 concentration data with the turfs using the field record
 # we have defined a default window length of 60 secs.
@@ -38,7 +41,11 @@ record_hogsete <- read_csv("raw_data/PFTC6_cflux_field-record_hogsete.csv", na =
 co2_fluxes_hogsete_60 <- match.flux.PFTC6(co2_24h_hogsete, record_hogsete, window_length = 60, date_format = "ymd")
 
 # cutting hogsete ------------------------------------------------------
-cutting_hogsete <- read_csv("raw_data/PFTC6_cflux_cutting_hogsete.csv", na = "", col_types = "dtt")
+cutting_hogsete <- read_csv("raw_data/PFTC6_cflux_cutting_hogsete.csv", na = "")
+#cutting_hogsete <- read_csv("raw_data/PFTC6_cflux_cutting_hogsete.csv", na = "", col_types = "dtt") # I removed the last part of the line
+
+cutting_hogsete$start_cut <- gsub("(\\d{2})(?=\\d{2})", "\\1:", cutting_hogsete$start_cut, perl = TRUE) # to add the : in the time
+cutting_hogsete$end_cut <- gsub("(\\d{2})(?=\\d{2})", "\\1:", cutting_hogsete$end_cut, perl = TRUE) # to add the : in the time
 
 co2_cut_hogsete_60 <- co2_fluxes_hogsete_60 %>% 
   left_join(cutting_hogsete, by = "fluxID") %>% 
@@ -62,6 +69,7 @@ co2_cut_hogsete_60 <- co2_cut_hogsete_60 %>%
     cut = case_when(
       datetime <= start_window | datetime >= end_window ~ "cut",
       # fluxID ==  & datetime %in%  ~ "cut",
+      fluxID ==  1  ~ "cut",
       TRUE ~ "keep"
     ),
     cut = as_factor(cut)
