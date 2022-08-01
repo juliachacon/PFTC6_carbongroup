@@ -55,11 +55,16 @@ make_data_dictionary <- function(data, description_table){
 description <- read_csv("code/data_dic/data_dic.csv")
 
 # metadata turf ------------------------------------------------------------------
-metadata_dic <- make_data_dictionary(data = metadata,
-                                  description_table = description
-)
+# metadata_dic <- make_data_dictionary(data = metadata,
+#                                   description_table = description
+# )
 
 # cflux ------------------------------------------------------------------
 cflux_vikesland_dic <- make_data_dictionary(data = cflux_vikesland,
                                      description_table = description
 )
+
+
+# render readme --------------------------------------------------------
+# to avoid re running everything and slowing down the process, we render the readme file here
+rmarkdown::render(input = "README.Rmd")
