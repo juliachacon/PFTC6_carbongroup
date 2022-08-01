@@ -20,4 +20,4 @@ get_file(node = "pk4bg",
           path = "clean_data",
           remote_path = "C-Flux")
 
-cflux_vikesland<-read.csv("clean_data/Three-D_24h-cflux_vikesland_2022.csv")
+cflux_vikesland <- read_csv("clean_data/Three-D_24h-cflux_vikesland_2022.csv", col_types = "ddddddddffTd")

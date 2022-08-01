@@ -1,13 +1,13 @@
-Variable name,Description,Variable type,Variable range or levels,Unit,How measured
-fluxID,,numeric,1Ê-Ê288,,
-p.value,P value ,numeric,0Ê-Ê0.972,,
-r.squared,R squared,numeric,0Ê-Ê0.999,,
-adj.r.squared,Adjusted R squared,numeric,-0.011Ê-Ê0.999,,
-nobs,,numeric,60Ê-Ê89,,
-PARavg,The mean of the Photosynthetic Active Radiation (PAR) value,numeric,-3.71Ê-Ê461.292,,Automatically measured by the PAR sensor and recorded to the data logger
-temp_airavg,The mean of the air temperature inside of the chamber,numeric,283.907Ê-Ê293.683,,Automatically measured by the thermal sensor and recorded to the data logger
-temp_soilavg,The mean of the soil temperature in the outer plot.,numeric,12.155Ê-Ê17.667,,Automatically measured by the thermal sensor and recorded to the data logger
-turfID,The ID of the plot of the carbon flux measurement,categorical,105ÊWN3CÊ173Ê-ÊTTCÊ146,,
-type,Types of the data that were collected with (ER) and without tarps (NEE).,categorical,ERÊ-ÊNEE,,
-datetime,Date and time of the measured carbon flux,categorical,2022-07-23T21:45:15ZÊ-Ê2022-07-24T22:04:00Z,,
-flux,The value of the measured carbon flux,numeric,-153.429Ê-Ê94.614,,Measured by Licor and recorded to the data logger
+Variable name,Description,Unit,How measured
+fluxID,,,defined
+p.value,P value ,,calculated
+r.squared,R squared,,calculated
+adj.r.squared,Adjusted R squared,,calculated
+nobs,,,counted
+PARavg,The mean of the Photosynthetic Active Radiation (PAR) value,,Automatically measured by the PAR sensor and recorded to the data logger
+temp_airavg,The mean of the air temperature inside of the chamber,,Automatically measured by the thermal sensor and recorded to the data logger
+temp_soilavg,The mean of the soil temperature in the outer plot.,,Automatically measured by the thermal sensor and recorded to the data logger
+turfID,The ID of the plot of the carbon flux measurement,,defined
+type,Types of the data that were collected with (ER) and without tarps (NEE).,,defined
+datetime,Date and time of the measured carbon flux,,defined
+flux,The value of the measured carbon flux,,calculated
