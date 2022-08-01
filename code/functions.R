@@ -12,7 +12,7 @@ library(broom)
 
 # match.flux.PFTC6
 
-match.flux.PFTC6 <- function(raw_flux, field_record, window_length = 90, startcrop = 10, measurement_length = 210){
+match.flux.PFTC6 <- function(raw_flux, field_record, window_length = 90, startcrop = 10, measurement_length = 210, date_format = "dmy"){
   
   raw_flux <- raw_flux %>% 
     rename( #rename the columns with easier names to handle in the code
@@ -30,7 +30,14 @@ match.flux.PFTC6 <- function(raw_flux, field_record, window_length = 90, startcr
   field_record <- field_record %>%
     mutate(
       starting_time = gsub("(\\d{2})(?=\\d{2})", "\\1:", starting_time, perl = TRUE), # to add the : in the time
-      date = dmy(date), #date in R format
+      date = case_when(
+        # !is.na(ymd(date)) ~ ymd(date),
+        # !is.na(dmy(date)) ~ dmy(date)
+        date_format == "ymd" ~ ymd(date),
+        date_format == "dmy" ~ dmy(date),
+        date_format == "mdy" ~ mdy(date)
+      ),
+      # date = dmy(date), #date in R format
       start = ymd_hms(paste(date, starting_time)), #pasting date and time together to make datetime
       end = start + measurement_length, #creating column End
       start_window = start + startcrop, #cropping the start
