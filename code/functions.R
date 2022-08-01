@@ -23,7 +23,11 @@ match.flux.PFTC6 <- function(raw_flux, field_record, window_length = 90, startcr
       PAR = "PAR (umolsm2)"
     ) %>% 
     mutate(
-      datetime = dmy_hms(datetime) #transformt the date into R date format
+      datetime = dmy_hms(datetime), #transform the date into R date format
+      temp_air = as.numeric(temp_air),
+      temp_soil = as.numeric(temp_soil),
+      CO2 = as.numeric(CO2),
+      PAR = as.numeric(PAR),
     ) %>% 
     select(datetime, temp_soil, temp_air, CO2, PAR)
   
