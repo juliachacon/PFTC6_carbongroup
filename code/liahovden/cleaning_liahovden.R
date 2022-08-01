@@ -27,14 +27,14 @@ get_file(node = "pk4bg",
 
 # cleaning Vikesland ------------------------------------------------------
 # read the files
-co2_24h_vikesland <- read_csv("raw_data/Three-D_24h-cflux_vikesland_2022.csv", na = c("#N/A"))
+co2_24h_liahovden <- read_csv("raw_data/Three-D_24h-cflux_liahovden_2022.csv", na = c("#N/A"))
   
-record_vikesland <- read_csv("raw_data/PFTC6_cflux_field-record_vikesland.csv", na = c(""))
+record_liahovden <- read_csv("raw_data/PFTC6_cflux_field-record_liahovden.csv", na = c(""))
 
 # matching the CO2 concentration data with the turfs using the field record
 # we have defined a default window length of 90 secs.
 
-co2_fluxes_vikesland_90 <- match.flux.PFTC6(co2_24h_vikesland, record_vikesland, window_length = 90)
+co2_fluxes_liahovden_90 <- match.flux.PFTC6(co2_24h_vikesland, record_vikesland, window_length = 90)
 
 # cutting Vikesland ------------------------------------------------------
 cutting_vikesland <- read_csv("raw_data/PFTC6_cflux_cutting_vikesland.csv", na = "", col_types = "dtt")
