@@ -54,12 +54,15 @@ flux_virk_60 <- flux_virk_60 %>%
   )
 
 plot(x = flux_virk_60$datetime_ER, y = flux_virk_60$GPP, col="red")
+
 points(x = flux_virk_60$datetime_ER, y = flux_virk_60$ER, col ="blue")
 #points(x = flux_virk_60$datetime_ER, y = flux_virk_60$NEE, col ="blue")
 
 flux_virk_60 %>% 
 ggplot(aes(x = datetime_NEE, y = GPP)) +
-  geom_line(aes(color = turfID))
+  geom_line(aes(color = turfID)) +
+  theme(axis.text=element_text(size=12),
+        axis.title=element_text(size=14,face="bold"))
 
 flux_virk_60 %>% 
   ggplot(aes(x = datetime_NEE, y = ER)) +
