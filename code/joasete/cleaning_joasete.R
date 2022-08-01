@@ -41,26 +41,22 @@ co2_24h_joasete <- read_csv("raw_data/Three-D_24h-cflux_joasete_2022.csv", na = 
   
 record_joasete <- read_csv("raw_data/PFTC6_cflux_field-record_joasete.csv", na = c(""))
 
+
+
+
+# matching the CO2 concentration data with the turfs using the field record
+# we have defined a default window length of 90 secs.
+
+co2_fluxes_joasete_90 <- match.flux.PFTC6(co2_24h_joasete, record_joasete, window_length = 90, date_format = "ymd")
 # at Joasete, turfID 29 WN3C 106 and 109 AN3C 109 were swapped between 2022-07-28 11:20:00 and 2022-07-29 00:30:00
 
-record_joasete <- record_joasete %>% 
+co2_fluxes_joasete_90 <- co2_fluxes_joasete_90 %>% 
   mutate(
-    starting_time = as.numeric(starting_time),
     turfID_correct = case_when(
-      starting_time >= 112000
-      & date == "2022-07-28"
+      datetime %in% c(ymd_hms("2022-07-28T11:20:00"):ymd_hms("2022-07-29T00:30:00"))
       & turfID == "29 WN3C 106"
       ~ "109 AN3C 109",
-      starting_time <= 003000
-      & date == "2022-07-29"
-      & turfID == "29 WN3C 106"
-      ~ "109 AN3C 109",
-      starting_time >= 112000
-      & date == "2022-07-28"
-      & turfID == "109 AN3C 109"
-      ~ "29 WN3C 106",
-      starting_time <= 003000
-      & date == "2022-07-29"
+      datetime %in% c(ymd_hms("2022-07-28T11:20:00"):ymd_hms("2022-07-29T00:30:00"))
       & turfID == "109 AN3C 109"
       ~ "29 WN3C 106",
       TRUE ~ turfID
@@ -70,12 +66,6 @@ record_joasete <- record_joasete %>%
   rename(
     turfID = "turfID_correct"
   )
-
-# matching the CO2 concentration data with the turfs using the field record
-# we have defined a default window length of 90 secs.
-
-co2_fluxes_joasete_90 <- match.flux.PFTC6(co2_24h_joasete, record_joasete, window_length = 90, date_format = "ymd")
-
 # cutting Vikesland ------------------------------------------------------
 cutting_joasete <- read_csv("raw_data/PFTC6_cflux_cutting_joasete.csv", na = "", col_types = "dtt")
 
@@ -168,6 +158,39 @@ filt_ER_90 %>% filter(fluxID == "227") %>%
 
 cflux_joasete <- co2_cut_90_keep %>% 
   flux.calc.PFTC6()
+
+
+# calculation of GPP ------------------------------------------------------
+
+cflux_joasete_GPP <- cflux_joasete %>%
+  mutate(
+    pairID = case_when(
+      type == "NEE" ~ fluxID,
+      type == "ER" ~ fluxID-1
+    )
+  ) %>% 
+  select(!c(p.value, r.squared, adj.r.squared, nobs)) %>% 
+  # pivot_wider(names_from = type, values_from = PARavg, names_prefix = "PARavg_") %>% 
+  # select(!c(PAR_corrected_flux)) %>%
+  # select(campaign, turfID, date, type, corrected_flux) %>%
+  pivot_wider(names_from = type, values_from = c(flux, temp_soilavg)) %>% 
+  rename(
+    ER = flux_ER,
+    NEE = flux_NEE
+  ) %>%
+  mutate(
+    GEP = NEE - ER
+  ) %>% 
+  pivot_longer(c(ER, NEE, GEP), names_to = "type", values_to = "corrected_flux") %>% 
+  mutate(
+    temp_soil = case_when(
+      type == "ER" ~ temp_soilavg_ER,
+      type == "NEE" ~ temp_soilavg_NEE,
+      type == "GEP" ~ rowMeans(select(., c(temp_soilavg_NEE, temp_soilavg_ER)), na.rm = TRUE)
+    )
+  ) %>% 
+  select(!c(temp_soilavg_ER, temp_soilavg_NEE))
+  
 
 write_csv(cflux_joasete, "clean_data/Three-D_24h-cflux_joasete_2022.csv")
 
