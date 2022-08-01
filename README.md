@@ -16,6 +16,14 @@ masl, 3 plots), Joasete (888 masl, 6 plots), and Liahovden (1.267 masl,
 along with Photosynthetic Active Radiation (PAR) were measured using
 Li-cor LI-840A.
 
+# Data dictionnaries
+
+## CO<sub>2</sub> fluxes
+
+### Vikesland
+
+# Figures
+
 # Field measurements
 
 ## Start of 24h campaign
@@ -94,5 +102,3 @@ liht).
 5.  Connect the logger
 6.  Check the logger’s clock again
 7.  Arm the logger
-
-# Data dictionnaries
