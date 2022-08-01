@@ -6,19 +6,30 @@ get_file(node = "pk4bg",
          path = "raw_data",
          remote_path = "Site")
 
+meta_seedclim <- tibble(
+  turfID = c("TTC 101", "TTC 110", "TTC 115", "TTC 146", "TTC 140", "TTC 141"),
+  site = c("hogsete", "hogsete", "hogsete", "vikesland", "vikesland", "vikesland"),
+  warming = "ambient"
+)
+
 metaturf <- read_csv("raw_data/Three-D_metaturfID.csv") %>% 
   select(warming, origSiteID, turfID) %>% 
   rename(
-    Site = origSiteID,
-    Warming = warming
+    site = origSiteID
   ) %>% 
   mutate(
-    Site = str_replace_all(
-      Site,
-      c("Lia" = "Liahovden" , "Joa" = "Joasete", "Vik" = "Vikesland")
+    site = str_replace_all(
+      site,
+      c("Lia" = "liahovden" , "Joa" = "joasete", "Vik" = "vikesland")
     ),
-    Warming = str_replace_all(
-      Warming,
-      c("W" = "Transplant", "A" = "Ambient")
+    warming = str_replace_all(
+      warming,
+      c("W" = "transplant", "A" = "ambient")
     )
-  )
+  ) %>% 
+  bind_rows(meta_seedclim)
+
+
+
+
+
