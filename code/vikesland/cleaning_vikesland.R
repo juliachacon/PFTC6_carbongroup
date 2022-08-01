@@ -89,7 +89,7 @@ co2_cut_vikesland_60 <- co2_cut_vikesland_60 %>%
 co2_cut_60_keep <- filter(co2_cut_vikesland_60,
                   cut == "keep")  #to keep only the part we want to keep
 
-# cleaning PAR --------------------------------------------------------------
+# cleaning PAR ------------------------------------------
 
 # for ER we look at the range of PAR to see if there are errors
 filter(co2_cut_60_keep, type == "ER") %>% #faster than looking at the graph!
@@ -97,10 +97,18 @@ filter(co2_cut_60_keep, type == "ER") %>% #faster than looking at the graph!
     rangePAR = range(PAR)
   )
 
-# visualize PAR levels
+# for NEE we look at the range of PAR to see if there are errors
+
+filter(co2_cut_60_keep, type == "NEE") %>% #faster than looking at the graph!
+  summarise(
+    rangePAR = range(PAR)
+  )
+
+# visualize PAR level ---------------------------------
+# ER ---------------------------------
 
 filt_ER_60 <- filter(co2_cut_60_keep, type == "ER") # I am just filtering to make things easier
-
+# quick plot
 plot(filt_ER_60$PAR) # Plot the PAR values
 plot(x= filt_ER_60$datetime, y= filt_ER_60$PAR) # Plot the PAR vs time
 abline(h=0, col="red")
@@ -127,6 +135,31 @@ abline(h=0, col="red")
 #range(filt_ER_60[filt_ER_60$PAR > 60,]$PAR) # and the PAR levels (no big deal)
 #unique(filt_ER_60[filt_ER_60$PAR > 60,]$datetime) # who was on the field at this time...
 
+#  NEE ---------------------------------
+
+filt_NEE_60 <- filter(co2_cut_60_keep, type == "NEE") # I am just filtering to make things easier
+
+# quick plot
+plot(filt_NEE_60$PAR) # Plot the PAR values
+plot(x= filt_NEE_60$datetime, y= filt_NEE_60$PAR,
+     xlab = "Time of the day (hours)", 
+     ylab = "Photosynthetically active radiation (PAR)",
+     col = alpha("blue", 0.1), pch=16,
+) # Plot the PAR vs time
+
+abline(h=0, col="red")
+
+####
+
+co2_cut_60_keep %>% 
+  filter(
+    type == "ER"
+  ) %>% 
+  ggplot(aes(datetime, PAR)) +
+  geom_point()+
+  theme(axis.text=element_text(size=12),
+        axis.title=element_text(size=14,face="bold"))
+
 co2_cut_60_keep %>% 
   filter(
     type == "NEE"
@@ -134,9 +167,9 @@ co2_cut_60_keep %>%
   ggplot(aes(datetime, PAR)) +
   geom_point()+
   theme(axis.text=element_text(size=12),
-         axis.title=element_text(size=14,face="bold"))
+        axis.title=element_text(size=14,face="bold"))
 
-# for ER we look at the range of PAR to see if there are errors
+# for ER we look at the range of PAR to see if there are still errors
 filter(co2_cut_60_keep, type == "ER") %>% #faster than looking at the graph!
   summarise(
     rangePAR = range(PAR)
