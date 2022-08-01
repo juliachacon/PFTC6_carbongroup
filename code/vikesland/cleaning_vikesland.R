@@ -118,10 +118,10 @@ co2_cut_60_keep <- co2_cut_60_keep %>%
 
 # let´s plot the PAR values for ER again:
 
-co2_cut_60_keep %>% 
-  filter(type=="ER") %>% 
-  ggplot(aes(x=datetime, y = PAR)) +
-  geom_point()
+filt_ER_60 <- filter(co2_cut_60_keep, type == "ER")
+
+plot(x= filt_ER_60$datetime, y= filt_ER_60$PAR) # Plot the PAR vs time
+abline(h=0, col="red")
 
 #unique(filt_ER_60[filt_ER_60$PAR > 60,]$fluxID) # identify the weird values 
 #range(filt_ER_60[filt_ER_60$PAR > 60,]$PAR) # and the PAR levels (no big deal)
@@ -132,7 +132,9 @@ co2_cut_60_keep %>%
     type == "NEE"
   ) %>% 
   ggplot(aes(datetime, PAR)) +
-  geom_point()
+  geom_point()+
+  theme(axis.text=element_text(size=12),
+         axis.title=element_text(size=14,face="bold"))
 
 # for ER we look at the range of PAR to see if there are errors
 filter(co2_cut_60_keep, type == "ER") %>% #faster than looking at the graph!
@@ -142,6 +144,7 @@ filter(co2_cut_60_keep, type == "ER") %>% #faster than looking at the graph!
 
 # ... what should we do now??
 # 1. think about weird PAR values. what could be happening, and how to solve it? (Discuss in class)
+
 # 2. we should also manually modify the cuts for those curve that does not look fine with the automatic cuts.
 
 
