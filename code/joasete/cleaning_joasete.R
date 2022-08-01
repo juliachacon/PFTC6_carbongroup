@@ -3,22 +3,23 @@
 
 source("code/functions.R")
 library("dataDownloader")
+library(tidyverse)
 
 # download raw data
 # download files from OSF ---------------------------------------
 
 get_file(node = "pk4bg",
-         file = "Three-D_24h-cflux_vikesland_2022.csv",
+         file = "Three-D_24h-cflux_joasete_2022.csv",
          path = "raw_data",
          remote_path = "RawData/C-Flux")
 
 get_file(node = "pk4bg",
-         file = "PFTC6_cflux_field-record_vikesland.csv",
+         file = "PFTC6_cflux_field-record_joasete.csv",
          path = "raw_data",
          remote_path = "RawData/C-Flux")
 
 get_file(node = "pk4bg",
-         file = "PFTC6_cflux_cutting_vikesland.csv",
+         file = "PFTC6_cflux_cutting_joasete.csv",
          path = "raw_data",
          remote_path = "RawData/C-Flux")
 
@@ -27,20 +28,20 @@ get_file(node = "pk4bg",
 
 # cleaning Vikesland ------------------------------------------------------
 # read the files
-co2_24h_vikesland <- read_csv("raw_data/Three-D_24h-cflux_vikesland_2022.csv", na = c("#N/A"))
+co2_24h_joasete <- read_csv("raw_data/Three-D_24h-cflux_joasete_2022.csv", na = c("#N/A"))
   
-record_vikesland <- read_csv("raw_data/PFTC6_cflux_field-record_vikesland.csv", na = c(""))
+record_joasete <- read_csv("raw_data/PFTC6_cflux_field-record_joasete.csv", na = c(""))
 
 # matching the CO2 concentration data with the turfs using the field record
 # we have defined a default window length of 90 secs.
 
-co2_fluxes_vikesland_90 <- match.flux.PFTC6(co2_24h_vikesland, record_vikesland, window_length = 90)
+co2_fluxes_joasete_90 <- match.flux.PFTC6(co2_24h_joasete, record_joasete, window_length = 90)
 
 # cutting Vikesland ------------------------------------------------------
-cutting_vikesland <- read_csv("raw_data/PFTC6_cflux_cutting_vikesland.csv", na = "", col_types = "dtt")
+cutting_joasete <- read_csv("raw_data/PFTC6_cflux_cutting_joasete.csv", na = "", col_types = "dtt")
 
-co2_cut_vikesland_90 <- co2_fluxes_vikesland_90 %>% 
-  left_join(cutting_vikesland, by = "fluxID") %>% 
+co2_cut_joasete_90 <- co2_fluxes_joasete_90 %>% 
+  left_join(cutting_joasete, by = "fluxID") %>% 
   mutate(
     start_cut = ymd_hms(paste(date, .$start_cut)),
     end_cut = ymd_hms(paste(date, .$end_cut))
@@ -48,7 +49,7 @@ co2_cut_vikesland_90 <- co2_fluxes_vikesland_90 %>%
 
 # adjusting the time window with manual cuts ------------------------------------------------------
 
-co2_cut_vikesland_90 <- co2_cut_vikesland_90 %>%
+co2_cut_joasete_90 <- co2_cut_joasete_90 %>%
   mutate(
   start_window = case_when(
     is.na(start_cut) == FALSE ~ start_cut,
@@ -85,7 +86,7 @@ co2_cut_vikesland_90 <- co2_cut_vikesland_90 %>%
 
 # produce clean CO2 cut --------------------------------------------------------
 
-co2_cut_90_keep <- filter(co2_cut_vikesland_90,
+co2_cut_90_keep <- filter(co2_cut_joasete_90,
                   cut == "keep")  #to keep only the part we want to keep
 
 # cleaning PAR --------------------------------------------------------------
@@ -98,12 +99,12 @@ filter(co2_cut_90_keep, type == "ER") %>% #faster than looking at the graph!
 
 # visualize PAR levels
 
-filt_ER_90 <- filter(co2_cut_90_keep, type == "ER") # I am just filtering to make things easier
-plot(filt_ER_90$PAR) # Plot the PAR values
-plot(x= filt_ER_90$datetime, y= filt_ER_90$PAR) # Plot the PAR vs time
-unique(filt_ER_90[filt_ER_90$PAR>60,]$fluxID) # identify the weird values 
-range(filt_ER_90[filt_ER_90$PAR>60,]$PAR) # and the PAR levels (no big deal)
-unique(filt_ER_90[filt_ER_90$PAR>60,]$datetime) # who was on the field at this time...
+# filt_ER_90 <- filter(co2_cut_90_keep, type == "ER") # I am just filtering to make things easier
+# plot(filt_ER_90$PAR) # Plot the PAR values
+# plot(x= filt_ER_90$datetime, y= filt_ER_90$PAR) # Plot the PAR vs time
+# unique(filt_ER_90[filt_ER_90$PAR>60,]$fluxID) # identify the weird values 
+# range(filt_ER_90[filt_ER_90$PAR>60,]$PAR) # and the PAR levels (no big deal)
+# unique(filt_ER_90[filt_ER_90$PAR>60,]$datetime) # who was on the field at this time...
 
 # for ER we look at the range of PAR to see if there are errors
 filter(co2_cut_90_keep, type == "ER") %>% #faster than looking at the graph!
@@ -125,8 +126,8 @@ filt_ER_90 %>% filter(fluxID == "227") %>%
 
 # calculation of fluxes ---------------------------------------------------
 
-cflux_vikesland <- co2_cut_90_keep %>% 
+cflux_joasete <- co2_cut_90_keep %>% 
   flux.calc.PFTC6()
 
-write_csv(cflux_vikesland, "clean_data/Three-D_24h-cflux_vikesland_2022.csv")
+write_csv(cflux_joasete, "clean_data/Three-D_24h-cflux_joasete_2022.csv")
 
