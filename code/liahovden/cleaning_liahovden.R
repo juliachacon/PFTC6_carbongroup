@@ -1,5 +1,5 @@
 
-# This script will be to separate c-flux data into turfIDs and clean the fluxes before we calculate them
+#This script will be to separate c-flux data into turfIDs and clean the fluxes before we calculate them
 
 source("code/functions.R")
 
@@ -39,7 +39,10 @@ record_liahovden <- read_csv("raw_data/PFTC6_cflux_field-record_liahovden.csv", 
 co2_fluxes_liahovden_60 <- match.flux.PFTC6(co2_24h_liahovden, record_liahovden, window_length = 60, date_format = "ymd")
 
 # cutting liahovden ------------------------------------------------------
-cutting_liahovden <- read_csv("raw_data/PFTC6_cflux_cutting_liahovden.csv", na = "", col_types = "dtt")
+cutting_liahovden <- read_csv("raw_data/PFTC6_cflux_cutting_liahovden.csv", na = "", col_types = "dcc")
+
+cutting_liahovden$start_cut <- gsub("(\\d{2})(?=\\d{2})", "\\1:", cutting_liahovden$start_cut, perl = TRUE) # to add the : in the time
+cutting_liahovden$end_cut <- gsub("(\\d{2})(?=\\d{2})", "\\1:", cutting_liahovden$end_cut, perl = TRUE) # to add the : in the time
 
 co2_cut_liahovden_60 <- co2_fluxes_liahovden_60 %>% 
   left_join(cutting_liahovden, by = "fluxID") %>% 
