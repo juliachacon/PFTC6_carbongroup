@@ -151,7 +151,10 @@ filter(co2_cut_60_keep, type == "ER") %>% #faster than looking at the graph!
 
 # 2. we should also manually modify the cuts for those curve that does not look fine with the automatic cuts.
 
+# we removed fluxID 86 because it seems that the cover was not properly on
 
+co2_cut_60_keep <- co2_cut_60_keep %>%
+  filter(fluxID!=86)
 
 # calculation of fluxes ---------------------------------------------------
 
