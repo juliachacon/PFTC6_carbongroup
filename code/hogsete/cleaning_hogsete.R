@@ -68,8 +68,7 @@ co2_cut_hogsete_60 <- co2_cut_hogsete_60 %>%
     ),
     cut = case_when(
       datetime <= start_window | datetime >= end_window ~ "cut",
-      # fluxID ==  & datetime %in%  ~ "cut",
-      fluxID ==  1  ~ "cut",
+      fluxID ==  33  ~ "cut",
       TRUE ~ "keep"
     ),
     cut = as_factor(cut)
