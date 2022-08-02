@@ -10,4 +10,5 @@ JuliaTheme <- theme(axis.title = element_text(size = 12, color ="darkgrey"),
                 panel.grid.major.y = element_blank(),
                 panel.grid.minor.x = element_blank(),
                 panel.grid.minor.y = element_blank(),
-                panel.background = element_rect(fill = 'white', colour = 'grey'))
+                panel.background = element_rect(
+                  fill = 'white', colour = 'grey'))
