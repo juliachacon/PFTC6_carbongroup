@@ -71,20 +71,20 @@ co2_cut_vikesland_60 <- co2_cut_vikesland_60 %>%
   )
 
 # vizz Vikesland -------------------------------------------------------
-
-# visualizing 60 secs cuts in Vikesland (it´s in comments, just in case you don´t want to visualize it)
-
-theme_set(theme_grey(base_size = 5))
-co2_cut_vikesland_60 %>%
-   ggplot(aes(x = datetime, y = CO2, colour = cut)) +
-   geom_line(size = 0.2, aes(group = fluxID)) +
-   # geom_line(size = 0.2) +
-   scale_x_datetime(date_breaks = "1 min", minor_breaks = "10 sec", date_labels = "%e/%m \n %H:%M") +
-   # scale_x_date(date_labels = "%H:%M:%S") +
-   facet_wrap(vars(fluxID), ncol = 30, scales = "free")
-
-ggsave("fluxes_details_vikesland.png", height = 40, width = 80, units = "cm")
-
+# 
+# # visualizing 60 secs cuts in Vikesland (it´s in comments, just in case you don´t want to visualize it)
+# 
+# theme_set(theme_grey(base_size = 5))
+# co2_cut_vikesland_60 %>%
+#    ggplot(aes(x = datetime, y = CO2, colour = cut)) +
+#    geom_line(size = 0.2, aes(group = fluxID)) +
+#    # geom_line(size = 0.2) +
+#    scale_x_datetime(date_breaks = "1 min", minor_breaks = "10 sec", date_labels = "%e/%m \n %H:%M") +
+#    # scale_x_date(date_labels = "%H:%M:%S") +
+#    facet_wrap(vars(fluxID), ncol = 30, scales = "free")
+# 
+# ggsave("fluxes_details_vikesland.png", height = 40, width = 80, units = "cm")
+# 
 
 # produce clean CO2 cut --------------------------------------------------------
 
@@ -364,52 +364,52 @@ cflux_vikesland <- co2_cut_60_keep %>%
 
 # calculating GPP ---------------------------------------------------------
 
-cflux_vikesland_GPP <- cflux_vikesland %>%
-  mutate(
-    pairID = case_when(
-      type == "NEE" ~ fluxID,
-      type == "ER" ~ fluxID-1
-    ),   # problem with datetime, it is different between ER and NEE. Let's use datetime NEE
-    # datetime = case_when(
-    #   type == "NEE" ~ datetime,
-    #   type == "ER" ~ NA_real_
-    # ),
-    turfID = as_factor(turfID),
-    type = as_factor(type)
-  ) %>%
-  select(!c(fluxID)) %>%
-  # pivot_wider(names_from = type, values_from = PARavg, names_prefix = "PARavg_") %>%
-  # select(!c(PAR_corrected_flux)) %>%
-  # select(campaign, turfID, date, type, corrected_flux) %>%
-  pivot_wider(names_from = type, values_from = c(flux, temp_soilavg, datetime, PARavg)) %>%
-
-  # pivot_wider(names_from = type, values_from = c(flux, temp_soilavg)) %>%
-  rename(
-    ER = flux_ER,
-    NEE = flux_NEE
-  ) %>%
-  mutate(
-    GEP = NEE - ER
-  ) %>%
-  pivot_longer(c(ER, NEE, GEP), names_to = "type", values_to = "flux") %>%
-  mutate(
-    temp_soil = case_when(
-      type == "ER" ~ temp_soilavg_ER,
-      type == "NEE" ~ temp_soilavg_NEE,
-      type == "GEP" ~ rowMeans(select(., c(temp_soilavg_NEE, temp_soilavg_ER)), na.rm = TRUE)
-    ),
-    PARavg = case_when(
-      type == "ER" ~ PARavg_ER,
-      type == "NEE" ~ PARavg_NEE,
-      type == "GEP" ~ PARavg_NEE
-      ),
-    datetime = case_when(
-      type == "ER" ~ datetime_ER,
-      type == "NEE" ~ datetime_NEE,
-      type == "GEP" ~ datetime_NEE
-    )
-  ) %>%
-  select(!c(temp_soilavg_ER, temp_soilavg_NEE, PARavg_ER, PARavg_NEE, datetime_ER, datetime_NEE))
+# cflux_vikesland_GPP <- cflux_vikesland %>%
+#   mutate(
+#     pairID = case_when(
+#       type == "NEE" ~ fluxID,
+#       type == "ER" ~ fluxID-1
+#     ),   # problem with datetime, it is different between ER and NEE. Let's use datetime NEE
+#     # datetime = case_when(
+#     #   type == "NEE" ~ datetime,
+#     #   type == "ER" ~ NA_real_
+#     # ),
+#     turfID = as_factor(turfID),
+#     type = as_factor(type)
+#   ) %>%
+#   select(!c(fluxID)) %>%
+#   # pivot_wider(names_from = type, values_from = PARavg, names_prefix = "PARavg_") %>%
+#   # select(!c(PAR_corrected_flux)) %>%
+#   # select(campaign, turfID, date, type, corrected_flux) %>%
+#   pivot_wider(names_from = type, values_from = c(flux, temp_soilavg, datetime, PARavg)) %>%
+# 
+#   # pivot_wider(names_from = type, values_from = c(flux, temp_soilavg)) %>%
+#   rename(
+#     ER = flux_ER,
+#     NEE = flux_NEE
+#   ) %>%
+#   mutate(
+#     GEP = NEE - ER
+#   ) %>%
+#   pivot_longer(c(ER, NEE, GEP), names_to = "type", values_to = "flux") %>%
+#   mutate(
+#     temp_soil = case_when(
+#       type == "ER" ~ temp_soilavg_ER,
+#       type == "NEE" ~ temp_soilavg_NEE,
+#       type == "GEP" ~ rowMeans(select(., c(temp_soilavg_NEE, temp_soilavg_ER)), na.rm = TRUE)
+#     ),
+#     PARavg = case_when(
+#       type == "ER" ~ PARavg_ER,
+#       type == "NEE" ~ PARavg_NEE,
+#       type == "GEP" ~ PARavg_NEE
+#       ),
+#     datetime = case_when(
+#       type == "ER" ~ datetime_ER,
+#       type == "NEE" ~ datetime_NEE,
+#       type == "GEP" ~ datetime_NEE
+#     )
+#   ) %>%
+#   select(!c(temp_soilavg_ER, temp_soilavg_NEE, PARavg_ER, PARavg_NEE, datetime_ER, datetime_NEE))
 
 cflux_vikesland <- GPP.PFTC6(cflux_vikesland)
 
