@@ -174,7 +174,7 @@ fluxes_GPP <- fluxes %>%
       type == "GEP" ~ datetime_NEE
     )
   ) %>% 
-  select(!c(temp_soilavg_ER, temp_soilavg_NEE, PARavg_ER, PARavg_NEE, datetime_ER, datetime_NEE))
+  select(!c(temp_soilavg_ER, temp_soilavg_NEE, PARavg_ER, PARavg_NEE, datetime_ER, datetime_NEE, pairID))
 
 return(fluxes_GPP)
 
