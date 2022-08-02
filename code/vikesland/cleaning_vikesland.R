@@ -73,17 +73,16 @@ co2_cut_vikesland_60 <- co2_cut_vikesland_60 %>%
 
 # visualizing 60 secs cuts in Vikesland (it´s in comments, just in case you don´t want to visualize it)
 
-# theme_set(theme_grey(base_size = 5))
-# 
-# co2_cut_vikesland_60 %>%
-#   ggplot(aes(x = datetime, y = CO2, colour = cut)) +
-#   geom_line(size = 0.2, aes(group = fluxID)) +
-#   # geom_line(size = 0.2) +
-#   scale_x_datetime(date_breaks = "1 min", minor_breaks = "10 sec", date_labels = "%e/%m \n %H:%M") +
-#   # scale_x_date(date_labels = "%H:%M:%S") +
-#   facet_wrap(vars(fluxID), ncol = 30, scales = "free")
+theme_set(theme_grey(base_size = 5))
+co2_cut_vikesland_60 %>%
+   ggplot(aes(x = datetime, y = CO2, colour = cut)) +
+   geom_line(size = 0.2, aes(group = fluxID)) +
+   # geom_line(size = 0.2) +
+   scale_x_datetime(date_breaks = "1 min", minor_breaks = "10 sec", date_labels = "%e/%m \n %H:%M") +
+   # scale_x_date(date_labels = "%H:%M:%S") +
+   facet_wrap(vars(fluxID), ncol = 30, scales = "free")
 
-# ggsave("fluxes_details_vikesland.png", height = 40, width = 80, units = "cm")
+ggsave("fluxes_details_vikesland.png", height = 40, width = 80, units = "cm")
 
 
 # produce clean CO2 cut --------------------------------------------------------
