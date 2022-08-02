@@ -103,7 +103,7 @@ flux.calc.PFTC6 <- function(co2conc, # dataset of CO2 concentration versus time 
       co2conc,
       by = "fluxID"
     ) %>% 
-    select(fluxID, slope, p.value, r.squared, adj.r.squared, nobs, PARavg, temp_airavg, temp_soilavg, turfID, type, start_window) %>% 
+    select(fluxID, slope, PARavg, temp_airavg, temp_soilavg, turfID, type, start_window) %>% 
     distinct() %>% 
     rename(
       datetime = start_window
@@ -111,10 +111,14 @@ flux.calc.PFTC6 <- function(co2conc, # dataset of CO2 concentration versus time 
     mutate(
       flux = (slope * atm_pressure * vol)/(R * temp_airavg * plot_area) #gives flux in micromol/s/m^2
       *3600 #secs to hours
-      /1000 #micromol to mmol
+      /1000, #micromol to mmol
+      PARavg = case_when(
+        type == "ER" ~ NA_real_,
+        type == "NEE" ~ PARavg
+      )
     ) %>% #flux is now in mmol/m^2/h, which is more common
     arrange(datetime) %>% 
-    select(!slope)
+    select(!c(slope, temp_airavg))
   
   return(fluxes_final)
   
