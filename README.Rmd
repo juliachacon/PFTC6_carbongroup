@@ -21,7 +21,7 @@ Net Ecosystem Exchange (NEE) and Ecosystem Respiration (ER) along with Photosynt
 <!-- ### Vikesland -->
 
 ```{r, echo=FALSE}
-knitr::kable(cflux_vikesland_dic)
+knitr::kable(cflux_dic)
 ```
 
 ## Microclimate
