@@ -161,5 +161,7 @@ filter(co2_cut_60_keep, type == "ER") %>% #faster than looking at the graph!
 cflux_hogsete <- co2_cut_60_keep %>% 
   flux.calc.PFTC6()
 
+cflux_hogsete <- GPP.PFTC6(cflux_hogsete)
+
 write_csv(cflux_hogsete, "clean_data/Three-D_24h-cflux_hogsete_2022.csv")
 
