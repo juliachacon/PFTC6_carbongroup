@@ -336,7 +336,7 @@ cflux_vikesland <- co2_cut_60_keep %>%
 #   ) %>% 
 #   select(!c(temp_soilavg_ER, temp_soilavg_NEE, PARavg_ER, PARavg_NEE, datetime_ER, datetime_NEE))
 
-cflux_vikesland_GPP <- GPP.PFTC6(cflux_vikesland)
+cflux_vikesland <- GPP.PFTC6(cflux_vikesland)
 
 
 write_csv(cflux_vikesland, "clean_data/Three-D_24h-cflux_vikesland_2022.csv")
