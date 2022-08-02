@@ -5,6 +5,39 @@ Joseph Gaudard
 
 # Introduction
 
+We study how trait composition influences ecosystem functioning by
+measuring CO2-flux within and across plant communities, mainly focus on
+ecosystem carbon dynamics in response to climate change, but also
+nitrogen deposition and grazing. Twenty-four hours of carbon Flux
+measurement was conducted along the elevational gradients in the four
+different sites, which are Vikesland (408 masl, 6 plots), Hogsete (697
+masl, 3 plots), Joasete (888 masl, 6 plots), and Liahovden (1.267 masl,
+3 plots). Net Ecosystem Exchange (NEE) and Ecosystem Respiration (ER)
+along with Photosynthetic Active Radiation (PAR) were measured using
+Li-cor LI-840A.
+
+# Data dictionnaries
+
+## CO<sub>2</sub> fluxes
+
+<!-- ### Vikesland -->
+
+| Variable name | Description                                                              | Variable type | Variable range or levels                                                                                                        | Unit           | How measured                                                                 |
+|:--------------|:-------------------------------------------------------------------------|:--------------|:--------------------------------------------------------------------------------------------------------------------------------|:---------------|:-----------------------------------------------------------------------------|
+| turfID        | The ID of the plot of the carbon flux measurement                        | categorical   | 85 WN1C 162, 105 WN3C 173, 158 WN2C 199, TTC 146, TTC 140, TTC 141, TTC 101, TTC 110, TTC 115, 4 AN1C 4, 27 AN3C 27, 77 AN2C 77 | NA             | defined                                                                      |
+| type          | Types of the data that were collected with (ER) and without tarps (NEE). | categorical   | ER, NEE, GPP                                                                                                                    | NA             | defined                                                                      |
+| flux          | The value of the measured carbon flux                                    | numeric       | -212.288 - 126.234                                                                                                              | mmol/sqm/h     | calculated                                                                   |
+| temp_soil     | The mean of the soil temperature in the outer plot.                      | numeric       | 0.825 - 21.608                                                                                                                  | celsius        | Automatically measured by the thermal sensor and recorded to the data logger |
+| PARavg        | The mean of the Photosynthetic Active Radiation (PAR) value              | numeric       | -2.819 - 1818.049                                                                                                               | micromol/s/sqm | Automatically measured by the PAR sensor and recorded to the data logger     |
+| datetime      | Date and time of the measured carbon flux                                | date_time     | 2022-07-23 21:45:15 - 2022-07-31 08:12:45                                                                                       | NA             | defined                                                                      |
+
+## Microclimate
+
+<!-- # Figures -->
+<!-- ```{r, echo=FALSE, fig.align='left', fig.cap=""} -->
+<!-- # graph -->
+<!-- ``` -->
+
 # Field measurements
 
 ## Start of 24h campaign
@@ -83,5 +116,3 @@ liht).
 5.  Connect the logger
 6.  Check the logger’s clock again
 7.  Arm the logger
-
-# Data dictionnaries
