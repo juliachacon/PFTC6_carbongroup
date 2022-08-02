@@ -4,6 +4,7 @@ source("code/cleaning_vikesland.R")
 
 # right join the metaturf     ------------------------------------------------
 #(we are adding here the treatments, sites, and so on)
+
 cflux_vikesland <- right_join(
   cflux_vikesland, metaturf)
 
@@ -24,7 +25,7 @@ cflux_vikesland %>%
      # ggplot( aes(
      #  x = datetime, y = flux, group= turfID, color = warming)) +
    ggplot( aes(
-    x = datetime, y = flux, color = warming)) +
+    x = datetime, y = flux, color = warming, shape=type)) +
   geom_point() +
   facet_grid(type ~ ., scales = "free") +
   geom_smooth(method = "lm",
