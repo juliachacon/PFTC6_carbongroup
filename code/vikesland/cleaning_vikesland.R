@@ -302,11 +302,11 @@ cflux_vikesland_GPP <- cflux_vikesland %>%
     turfID = as_factor(turfID),
     type = as_factor(type)
   ) %>% 
-  select(!c(fluxID, temp_soilavg)) %>%
+  select(flux, type, pairID, turfID, temp_soilavg, datetime) %>%
   # pivot_wider(names_from = type, values_from = PARavg, names_prefix = "PARavg_") %>% 
   # select(!c(PAR_corrected_flux)) %>%
   # select(campaign, turfID, date, type, corrected_flux) %>%
-  pivot_wider(id_cols = datetime, names_from = type, values_from = flux)
+  pivot_wider(names_from = type, values_from = c(flux, temp_soilavg))
   
   # pivot_wider(names_from = type, values_from = c(flux, temp_soilavg)) %>% 
   rename(
