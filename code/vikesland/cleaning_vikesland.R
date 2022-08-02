@@ -38,7 +38,7 @@ record_vikesland <- read_csv("raw_data/PFTC6_cflux_field-record_vikesland.csv", 
 co2_fluxes_vikesland_60 <- match.flux.PFTC6(co2_24h_vikesland, record_vikesland, window_length = 60)
 
 # cutting Vikesland ------------------------------------------------------
-cutting_vikesland <- read_csv("raw_data/PFTC6_cflux_cutting_vikesland.csv", na = "", col_types = "dtt")
+cutting_vikesland <- read_csv("raw_data/PFTC6_cflux_cutting_vikesland.csv", na = "", col_types = "dcc")
 
 co2_cut_vikesland_60 <- co2_fluxes_vikesland_60 %>% 
   left_join(cutting_vikesland, by = "fluxID") %>% 
@@ -285,6 +285,46 @@ filter(co2_cut_60_keep, type == "ER") %>% #faster than looking at the graph!
 
 cflux_vikesland <- co2_cut_60_keep %>% 
   flux.calc.PFTC6()
+
+
+# calculating GPP ---------------------------------------------------------
+
+cflux_vikesland_GPP <- cflux_vikesland %>%
+  mutate(
+    pairID = case_when(
+      type == "NEE" ~ fluxID,
+      type == "ER" ~ fluxID-1
+    ),   # problem with datetime, it is different between ER and NEE. Let's use datetime NEE
+    datetime = case_when(
+      type == "NEE" ~ datetime,
+      type == "ER" ~ NA_real_
+    ),
+    turfID = as_factor(turfID),
+    type = as_factor(type)
+  ) %>% 
+  select(!c(fluxID, temp_soilavg)) %>%
+  # pivot_wider(names_from = type, values_from = PARavg, names_prefix = "PARavg_") %>% 
+  # select(!c(PAR_corrected_flux)) %>%
+  # select(campaign, turfID, date, type, corrected_flux) %>%
+  pivot_wider(id_cols = datetime, names_from = type, values_from = flux)
+  
+  # pivot_wider(names_from = type, values_from = c(flux, temp_soilavg)) %>% 
+  rename(
+    ER = flux_ER,
+    NEE = flux_NEE
+  ) %>%
+  mutate(
+    GEP = NEE - ER
+  ) %>% 
+  pivot_longer(c(ER, NEE, GEP), names_to = "type", values_to = "flux") %>% 
+  mutate(
+    temp_soil = case_when(
+      type == "ER" ~ temp_soilavg_ER,
+      type == "NEE" ~ temp_soilavg_NEE,
+      type == "GEP" ~ rowMeans(select(., c(temp_soilavg_NEE, temp_soilavg_ER)), na.rm = TRUE)
+    )
+  ) %>% 
+  select(!c(temp_soilavg_ER, temp_soilavg_NEE))
 
 write_csv(cflux_vikesland, "clean_data/Three-D_24h-cflux_vikesland_2022.csv")
 
