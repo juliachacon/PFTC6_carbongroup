@@ -209,7 +209,7 @@ plot(x= filt_NEE_60$datetime, y= filt_NEE_60$PAR,
 abline(h = 0, col="blue")
 
 # same plot with ggplot2
-PAR_right_duringNEE_plot <- co2_cut_60_keep %>% 
+PAR_wrong_duringNEE_plot <- co2_cut_60_keep %>% 
   filter(type=="NEE") %>% 
   ggplot(aes(x = datetime,  y = PAR)) +
   geom_point(alpha = 1/10, size = 2) +
