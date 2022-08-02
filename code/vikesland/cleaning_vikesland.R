@@ -362,6 +362,9 @@ PAR_right_duringNEE_plot <- co2_cut_60_keep %>%
 cflux_vikesland <- co2_cut_60_keep %>% 
   flux.calc.PFTC6()
 
+# remove negative ER values (no sense)
+cflux_vikesland <- cflux_vikesland[!(cflux_vikesland$type=="ER" & cflux_vikesland$flux <0),]
+
 
 # calculating GPP ---------------------------------------------------------
 
