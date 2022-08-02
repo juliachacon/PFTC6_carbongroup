@@ -161,5 +161,7 @@ co2_cut_60_keep <- co2_cut_60_keep %>%
 cflux_liahovden <- co2_cut_60_keep %>% 
   flux.calc.PFTC6()
 
+cflux_liahovden <- GPP.PFTC6(cflux_liahovden)
+
 write_csv(cflux_liahovden, "clean_data/Three-D_24h-cflux_liahovden_2022.csv")
 

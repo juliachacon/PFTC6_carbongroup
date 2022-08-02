@@ -154,27 +154,27 @@ fluxes_GPP <- fluxes %>%
     NEE = flux_NEE
   ) %>%
   mutate(
-    GEP = NEE - ER
+    GPP = NEE - ER
   ) %>% 
-  pivot_longer(c(ER, NEE, GEP), names_to = "type", values_to = "flux") %>% 
+  pivot_longer(c(ER, NEE, GPP), names_to = "type", values_to = "flux") %>% 
   mutate(
     temp_soil = case_when(
       type == "ER" ~ temp_soilavg_ER,
       type == "NEE" ~ temp_soilavg_NEE,
-      type == "GEP" ~ rowMeans(select(., c(temp_soilavg_NEE, temp_soilavg_ER)), na.rm = TRUE)
+      type == "GPP" ~ rowMeans(select(., c(temp_soilavg_NEE, temp_soilavg_ER)), na.rm = TRUE)
     ),
     PARavg = case_when(
       type == "ER" ~ PARavg_ER,
       type == "NEE" ~ PARavg_NEE,
-      type == "GEP" ~ PARavg_NEE
+      type == "GPP" ~ PARavg_NEE
     ),
     datetime = case_when(
       type == "ER" ~ datetime_ER,
       type == "NEE" ~ datetime_NEE,
-      type == "GEP" ~ datetime_NEE
+      type == "GPP" ~ datetime_NEE
     )
   ) %>% 
-  select(!c(temp_soilavg_ER, temp_soilavg_NEE, PARavg_ER, PARavg_NEE, datetime_ER, datetime_NEE))
+  select(!c(temp_soilavg_ER, temp_soilavg_NEE, PARavg_ER, PARavg_NEE, datetime_ER, datetime_NEE, pairID))
 
 return(fluxes_GPP)
 
