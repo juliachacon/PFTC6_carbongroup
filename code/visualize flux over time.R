@@ -19,6 +19,7 @@ meta_seedclim <- tibble(
 cflux_all = cflux_vikesland %>%
   bind_rows(cflux_hogsete) %>%
   bind_rows(cflux_liahovden) %>%
+  bind_rows(cflux_joasete) %>%
   left_join(meta_seedclim) %>%
   mutate(datetime = ymd_hms(datetime),
          time = as_hms(datetime))
@@ -66,7 +67,8 @@ vik.plot.gpp = plot.flux.time("Vik", "GPP", -70, 80, "Gross primary productivity
 vik.plot.par = plot.par.time("Vik")
 
 vik.plot.gpp + vik.plot.par + vik.plot.er +
-  plot_layout(ncol = 1, heights = c(2, 1, 2)) 
+  plot_layout(ncol = 1, heights = c(2, 1, 2)) +
+  plot_annotation(title = "Vikesland")
 
 png("visualizations/flux_PAR_Vik.png", res = 300, units = "in", width = 10, height = 10)
 dev.off()
@@ -77,7 +79,8 @@ hog.plot.gpp = plot.flux.time("Hog", "GPP", -70, 80, "Gross primary productivity
 hog.plot.par = plot.par.time("Hog")
 
 hog.plot.gpp + hog.plot.par + hog.plot.er +
-  plot_layout(ncol = 1, heights = c(2, 1, 2)) 
+  plot_layout(ncol = 1, heights = c(2, 1, 2)) +
+  plot_annotation(title = "Hogsete")
 
 png("visualizations/flux_PAR_Hog.png", res = 300, units = "in", width = 10, height = 10)
 dev.off()
@@ -88,7 +91,8 @@ joa.plot.gpp = plot.flux.time("Joa", "GPP", -70, 80, "Gross primary productivity
 joa.plot.par = plot.par.time("Joa")
 
 joa.plot.gpp + joa.plot.par + joa.plot.er +
-  plot_layout(ncol = 1, heights = c(2, 1, 2)) 
+  plot_layout(ncol = 1, heights = c(2, 1, 2)) +
+  plot_annotation(title = "Joasete")
 
 png("visualizations/flux_PAR_Joa.png", res = 300, units = "in", width = 10, height = 10)
 dev.off()
@@ -99,7 +103,8 @@ lia.plot.gpp = plot.flux.time("Lia", "GPP", -70, 80, "Gross primary productivity
 lia.plot.par = plot.par.time("Lia")
 
 lia.plot.gpp + lia.plot.par + lia.plot.er +
-  plot_layout(ncol = 1, heights = c(2, 1, 2)) 
+  plot_layout(ncol = 1, heights = c(2, 1, 2)) +
+  plot_annotation(title = "Liahovden")
 
 png("visualizations/flux_PAR_Lia.png", res = 300, units = "in", width = 10, height = 10)
 dev.off()
