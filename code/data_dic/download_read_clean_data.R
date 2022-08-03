@@ -30,6 +30,14 @@ get_file(node = "pk4bg",
 cflux_hogsete <- read_csv("clean_data/Three-D_24h-cflux_hogsete_2022.csv", col_types = "ffdddT")
 
 get_file(node = "pk4bg",
+         file = "Three-D_24h-cflux_joasete_2022.csv",
+         path = "clean_data",
+         remote_path = "C-Flux")
+
+cflux_joasete <- read_csv("clean_data/Three-D_24h-cflux_joasete_2022.csv", col_types = "ffdddT")
+
+
+get_file(node = "pk4bg",
          file = "Three-D_24h-cflux_liahovden_2022.csv",
          path = "clean_data",
          remote_path = "C-Flux")
