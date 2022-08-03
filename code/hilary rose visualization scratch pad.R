@@ -12,17 +12,14 @@ meta_seedclim <- tibble(
   origSiteID = c("Hog", "Hog", "Hog", "Vik", "Vik", "Vik"),
   warming = "A"
 ) %>%
-  bind_rows(read_csv("raw_data/Three-D_metaturfID.csv")) 
+  bind_rows(read_csv("raw_data/Three-D_metaturfID.csv")) %>%
+  mutate(turfID = as.character(turfID)) 
 
 cflux_all = cflux_vikesland %>%
   bind_rows(cflux_hogsete) %>%
   bind_rows(cflux_liahovden) %>%
   left_join(meta_seedclim) %>%
   mutate(datetime = ymd_hms(datetime),
-    # hour = hour(datetime),
-    # minute = minute(datetime),
-    # second = second(datetime),
-    # time = paste(hour, minute, second, sep = ":"),
     time = as_hms(datetime))
 
 colnames(cflux_all)
@@ -40,7 +37,8 @@ hog.plot.er =
   ggplot(cflux_all %>% filter(origSiteID == "Hog") %>% filter(type == "ER"), 
        aes(y = flux, x = time, color = warming)) +
   geom_point() +
-  geom_smooth() +
+  geom_smooth(method = "loess", span = 0.3) +
+  geom_hline(yintercept = 0, color = "black", linetype = "dashed") +
   scale_color_manual(values = c("dodgerblue4", "firebrick4")) +
   facet_grid(type ~.) +
   ylim(-70, 80) +
@@ -57,7 +55,8 @@ hog.plot.gpp =
   # geom_area(inherit.aes = FALSE, aes(x = time, y = log(PARavg)), 
   #           fill = "goldenrod1", alpha = 0.5) +
   geom_point() +
-  geom_smooth() +
+  geom_smooth(method = "loess", span = 0.3) +
+  geom_hline(yintercept = 0, color = "black", linetype = "dashed") +
   scale_color_manual(values = c("dodgerblue4", "firebrick4")) +
   facet_grid(type ~.) +
   theme_bw() +
