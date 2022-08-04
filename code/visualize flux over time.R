@@ -133,9 +133,9 @@ cflux.plot.warm.gpp / cflux.plot.warm.er
 dev.off()
 
 ## Vikesland ----
-vik.plot.er = plot.flux.time.site("Vik", "ER", "21:10", -70, 80, "Ecosystem respiration (ER)")
-vik.plot.gpp = plot.flux.time.site("Vik", "GPP", "21:10", -70, 80, "Gross primary productivity (GPP)")
-vik.plot.par = plot.par.time.site("Vik")
+vik.plot.er = plot.flux.time.site("Vikesland", "ER", "21:10", -70, 80, "Ecosystem respiration (ER)")
+vik.plot.gpp = plot.flux.time.site("Vikesland", "GPP", "21:10", -70, 80, "Gross primary productivity (GPP)")
+vik.plot.par = plot.par.time.site("Vikesland")
 
 vik.plot.gpp + vik.plot.par + vik.plot.er +
   plot_layout(ncol = 1, heights = c(2, 1, 2)) +
@@ -163,11 +163,11 @@ png("visualizations/flux_PAR_Hog.png", res = 300, units = "in", width = 10, heig
 dev.off()
 
 ## Joasete ----
-joa.plot.er = plot.flux.time.site("Joa", "ER", "07:00", -70, 80, "Ecosystem respiration (ER)") +
+joa.plot.er = plot.flux.time.site("Joasete", "ER", "07:00", -70, 80, "Ecosystem respiration (ER)") +
   geom_vline(xintercept = lubridate::hm("04:00"), linetype = "dotted") 
-joa.plot.gpp = plot.flux.time.site("Joa", "GPP", "07:00", -70, 80, "Gross primary productivity (GPP)") +
+joa.plot.gpp = plot.flux.time.site("Joasete", "GPP", "07:00", -70, 80, "Gross primary productivity (GPP)") +
   geom_vline(xintercept = lubridate::hm("04:00"), linetype = "dotted") 
-joa.plot.par = plot.par.time.site("Joa")
+joa.plot.par = plot.par.time.site("Joasete")
 
 joa.plot.gpp + joa.plot.par + joa.plot.er +
   plot_layout(ncol = 1, heights = c(2, 1, 2)) +
@@ -177,9 +177,9 @@ png("visualizations/flux_PAR_Joa.png", res = 300, units = "in", width = 10, heig
 dev.off()
 
 ## Liahovden ----
-lia.plot.er = plot.flux.time.site("Lia", "ER", "05:20", -70, 80, "Ecosystem respiration (ER)")
-lia.plot.gpp = plot.flux.time.site("Lia", "GPP", "05:20", -70, 80, "Gross primary productivity (GPP)")
-lia.plot.par = plot.par.time.site("Lia")
+lia.plot.er = plot.flux.time.site("Liahovden", "ER", "05:20", -70, 80, "Ecosystem respiration (ER)")
+lia.plot.gpp = plot.flux.time.site("Liahovden", "GPP", "05:20", -70, 80, "Gross primary productivity (GPP)")
+lia.plot.par = plot.par.time.site("Liahovden")
 
 lia.plot.gpp + lia.plot.par + lia.plot.er +
   plot_layout(ncol = 1, heights = c(2, 1, 2)) +
