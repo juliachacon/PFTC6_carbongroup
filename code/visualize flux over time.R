@@ -107,23 +107,22 @@ dev.off()
 cflux.plot.warm.er = 
 ggplot(cflux_all %>% filter(origSiteID  %in% c("Liahovden", "Joasete")) %>% filter(type == "ER"), 
        aes(y = flux, x = time, color = warming, shape = origSiteID)) +
-  geom_point(alpha = 0.3) +
+  geom_point(alpha = 0.5) +
   geom_smooth(method = "loess", span = 0.3, aes(linetype = origSiteID)) +
-  scale_color_manual(values = c("#74B72E", "#FCC201")) +
-  scale_linetype_manual(values = c("dotdash", "longdash")) +
+  scale_color_manual(values = c("dodgerblue4", "firebrick4")) +
+  scale_linetype_manual(values = c("solid", "longdash")) +
   facet_grid(type ~., scales = "free") +
   ylim(-25, 120) +
   theme_bw() +
-  labs(x = "Time", title = "Ecosystem respiration (ER)") +
-  theme()
+  labs(x = "Time", title = "Ecosystem respiration (ER)") 
 
 cflux.plot.warm.gpp = 
   ggplot(cflux_all %>% filter(origSiteID  %in% c("Liahovden", "Joasete")) %>% filter(type == "GPP"), 
          aes(y = flux, x = time, color = warming, shape = origSiteID)) +  
-  geom_point(alpha = 0.3) +
+  geom_point(alpha = 0.5) +
   geom_smooth(method = "loess", span = 0.3, aes(linetype = origSiteID)) +
-  scale_color_manual(values = c("#74B72E", "#FCC201")) +
-  scale_linetype_manual(values = c("dotdash", "longdash")) +
+  scale_color_manual(values = c("dodgerblue4", "firebrick4")) +
+  scale_linetype_manual(values = c("solid", "longdash")) +
   facet_grid(type ~., scales = "free") +
   ylim(-120, 25) +
   theme_bw() +
@@ -146,9 +145,15 @@ png("visualizations/flux_PAR_Vik.png", res = 300, units = "in", width = 10, heig
 dev.off()
 
 ## Hogsete ----
-hog.plot.er = plot.flux.time.site("Hog", "ER", "22:30", -70, 80, "Ecosystem respiration (ER)")
-hog.plot.gpp = plot.flux.time.site("Hog", "GPP", "22:30", -70, 80, "Gross primary productivity (GPP)")
-hog.plot.par = plot.par.time.site("Hog")
+min(cflux_hogsete$flux_corrected[cflux_hogsete$type=="ER"], na.rm = TRUE)
+max(cflux_hogsete$flux_corrected[cflux_hogsete$type=="ER"], na.rm = TRUE)
+
+min(cflux_hogsete$flux_corrected[cflux_hogsete$type=="GPP"], na.rm = TRUE)
+max(cflux_hogsete$flux_corrected[cflux_hogsete$type=="GPP"], na.rm = TRUE)
+
+hog.plot.er = plot.flux.time.site("Hogsete", "ER", "22:30", 0, 90, "Ecosystem respiration (ER)")
+hog.plot.gpp = plot.flux.time.site("Hogsete", "GPP", "22:30", -90, 0, "Gross primary productivity (GPP)")
+hog.plot.par = plot.par.time.site("Hogsete")
 
 hog.plot.gpp + hog.plot.par + hog.plot.er +
   plot_layout(ncol = 1, heights = c(2, 1, 2)) +
