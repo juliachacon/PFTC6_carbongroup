@@ -18,9 +18,9 @@ meta_seedclim <- tibble(
 # Join all the data together ----
 cflux_all = cflux_vikesland %>%
   bind_rows(cflux_joasete) %>%
-  rename(flux_old = flux, flux = flux_corrected) %>%
   bind_rows(cflux_hogsete) %>%
   bind_rows(cflux_liahovden) %>%
+  rename(flux_old = flux, flux = flux_corrected) %>%
   left_join(meta_seedclim) %>%
   mutate(datetime = ymd_hms(datetime),
          time = as_hms(datetime))%>%
@@ -70,33 +70,68 @@ plot.par.time.site = function(dest.site) {
 # Make the plots ----
 ## All sites together ----
 
+# Check ylims
+min(cflux_all$flux[cflux_all$type == "ER" & cflux_all$warming == "A"], na.rm = TRUE)
+max(cflux_all$flux[cflux_all$type == "ER" & cflux_all$warming == "A"], na.rm = TRUE)
+
+min(cflux_all$flux[cflux_all$type == "GPP" & cflux_all$warming == "A"], na.rm = TRUE)
+max(cflux_all$flux[cflux_all$type == "GPP" & cflux_all$warming == "A"], na.rm = TRUE)
+
+cflux.plot.er =
 ggplot(cflux_all %>% filter(type == "ER") %>% filter(warming == "A"), 
        aes(y = flux, x = time, color = origSiteID)) +
   geom_point() +
   geom_smooth(method = "loess", span = 0.3) +
   scale_color_manual(values = c("#005a32", "#238443", "#41ab5d", "#78c679")) +
-  ylim(-20, 175) +
+  ylim(-20, 95) +
   theme_bw() +
-  labs(x = "Time") 
+  labs(x = "Time", title = "Ecosystem respiration (ER)") 
 
+cflux.plot.gpp =
 ggplot(cflux_all %>% filter(type == "GPP") %>% filter(warming == "A"), 
        aes(y = flux, x = time, color = origSiteID)) +
   geom_point() +
   geom_smooth(method = "loess", span = 0.3) +
   scale_color_manual(values = c("#005a32", "#238443", "#41ab5d", "#78c679")) +
-  ylim(20, -175) +
+  ylim(-95, 20) +
   theme_bw() +
-  labs(x = "Time") 
+  labs(x = "Time", title = "Gross primary productivity (GPP)") 
 
-ggplot(cflux_all %>% filter(type != "NEE") %>% filter(warming == "A"), 
-       aes(y = flux, x = time, color = origSiteID, shape = warming)) +
-  geom_point() +
-  geom_smooth(method = "loess", span = 0.3, aes(linetype = warming)) +
-  scale_color_manual(values = c("#005a32", "#238443", "#41ab5d", "#78c679")) +
-  scale_linetype_manual(values = c("solid", "dotdash")) +
+png("visualizations/flux_PAR_allsites.png", res = 300, units = "in", width = 10, height = 8)
+cflux.plot.gpp / cflux.plot.er
+dev.off()
+
+
+## Warming vs ambient ----
+
+cflux.plot.warm.er = 
+ggplot(cflux_all %>% filter(origSiteID  %in% c("Liahovden", "Joasete")) %>% filter(type == "ER"), 
+       aes(y = flux, x = time, color = warming, shape = origSiteID)) +
+  geom_point(alpha = 0.3) +
+  geom_smooth(method = "loess", span = 0.3, aes(linetype = origSiteID)) +
+  scale_color_manual(values = c("#74B72E", "#FCC201")) +
+  scale_linetype_manual(values = c("dotdash", "longdash")) +
   facet_grid(type ~., scales = "free") +
+  ylim(-25, 120) +
   theme_bw() +
-  labs(x = "Time") 
+  labs(x = "Time", title = "Ecosystem respiration (ER)") +
+  theme()
+
+cflux.plot.warm.gpp = 
+  ggplot(cflux_all %>% filter(origSiteID  %in% c("Liahovden", "Joasete")) %>% filter(type == "GPP"), 
+         aes(y = flux, x = time, color = warming, shape = origSiteID)) +  
+  geom_point(alpha = 0.3) +
+  geom_smooth(method = "loess", span = 0.3, aes(linetype = origSiteID)) +
+  scale_color_manual(values = c("#74B72E", "#FCC201")) +
+  scale_linetype_manual(values = c("dotdash", "longdash")) +
+  facet_grid(type ~., scales = "free") +
+  ylim(-120, 25) +
+  theme_bw() +
+  labs(x = "Time", title = "Gross primary productivity (GPP)") 
+
+png("visualizations/flux_PAR_warming.png", res = 300, units = "in", width = 10, height = 8)
+cflux.plot.warm.gpp / cflux.plot.warm.er
+dev.off()
 
 ## Vikesland ----
 vik.plot.er = plot.flux.time.site("Vik", "ER", "21:10", -70, 80, "Ecosystem respiration (ER)")
