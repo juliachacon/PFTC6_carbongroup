@@ -8,6 +8,16 @@ source("code/cleaning_vikesland.R")
 cflux_vikesland <- right_join(
   cflux_vikesland, metaturf)
 
+# calculate the 24 h average for all the fluxes
+
+cflux_vikesland_means <- 
+  cflux_vikesland %>% 
+  group_by(type, warming) %>% 
+  summarise(flux_avg = mean(flux, na.rm = TRUE))
+
+# 
+
+
 ## GPP over 24 h  -----------------------------------------------------------
 # filter(type =="ER") %>% 
 # filter(flux>=0) %>% 
@@ -71,7 +81,6 @@ FluxPlot_vikesland <-
     "ambient" = "#1e90ff",
     "transplant" = "#ff0800"
   )) 
-
 
 FluxPlot_vikesland 
 
