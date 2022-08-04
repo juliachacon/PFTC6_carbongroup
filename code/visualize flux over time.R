@@ -26,14 +26,15 @@ cflux_all = cflux_vikesland %>%
 
 colnames(cflux_all)
 
-# Scratch plot for time ----
-plot.flux.time = function(orig.site, flux.type, ylim1, ylim2, title) {
+# Graphing functions ----
+plot.flux.time = function(orig.site, flux.type, starttime, ylim1, ylim2, title) {
   
   ggplot(cflux_all %>% filter(destSiteID == orig.site) %>% filter(type == flux.type), 
          aes(y = flux, x = time, color = warming)) +
   geom_point() +
   geom_smooth(method = "loess", span = 0.3) +
   geom_hline(yintercept = 0, color = "black", linetype = "dashed") +
+  geom_vline(xintercept = lubridate::hm(starttime), linetype = "dotted") +
   scale_color_manual(values = c("dodgerblue4", "firebrick4")) +
   facet_grid(type ~.) +
   ylim(ylim1, ylim2) +
@@ -62,8 +63,8 @@ plot.par.time = function(dest.site) {
 
 # Make the plots ----
 ## Vikesland ----
-vik.plot.er = plot.flux.time("Vik", "ER", -70, 80, "Ecosystem respiration (ER)")
-vik.plot.gpp = plot.flux.time("Vik", "GPP", -70, 80, "Gross primary productivity (GPP)")
+vik.plot.er = plot.flux.time("Vik", "ER", "21:10", -70, 80, "Ecosystem respiration (ER)")
+vik.plot.gpp = plot.flux.time("Vik", "GPP", "21:10", -70, 80, "Gross primary productivity (GPP)")
 vik.plot.par = plot.par.time("Vik")
 
 vik.plot.gpp + vik.plot.par + vik.plot.er +
@@ -74,8 +75,8 @@ png("visualizations/flux_PAR_Vik.png", res = 300, units = "in", width = 10, heig
 dev.off()
 
 ## Hogsete ----
-hog.plot.er = plot.flux.time("Hog", "ER", -70, 80, "Ecosystem respiration (ER)")
-hog.plot.gpp = plot.flux.time("Hog", "GPP", -70, 80, "Gross primary productivity (GPP)")
+hog.plot.er = plot.flux.time("Hog", "ER", "22:30", -70, 80, "Ecosystem respiration (ER)")
+hog.plot.gpp = plot.flux.time("Hog", "GPP", "22:30", -70, 80, "Gross primary productivity (GPP)")
 hog.plot.par = plot.par.time("Hog")
 
 hog.plot.gpp + hog.plot.par + hog.plot.er +
@@ -86,8 +87,10 @@ png("visualizations/flux_PAR_Hog.png", res = 300, units = "in", width = 10, heig
 dev.off()
 
 ## Joasete ----
-joa.plot.er = plot.flux.time("Joa", "ER", -70, 80, "Ecosystem respiration (ER)")
-joa.plot.gpp = plot.flux.time("Joa", "GPP", -70, 80, "Gross primary productivity (GPP)")
+joa.plot.er = plot.flux.time("Joa", "ER", "07:00", -70, 80, "Ecosystem respiration (ER)") +
+  geom_vline(xintercept = lubridate::hm("04:00"), linetype = "dotted") 
+joa.plot.gpp = plot.flux.time("Joa", "GPP", "07:00", -70, 80, "Gross primary productivity (GPP)") +
+  geom_vline(xintercept = lubridate::hm("04:00"), linetype = "dotted") 
 joa.plot.par = plot.par.time("Joa")
 
 joa.plot.gpp + joa.plot.par + joa.plot.er +
@@ -98,8 +101,8 @@ png("visualizations/flux_PAR_Joa.png", res = 300, units = "in", width = 10, heig
 dev.off()
 
 ## Liahovden ----
-lia.plot.er = plot.flux.time("Lia", "ER", -70, 80, "Ecosystem respiration (ER)")
-lia.plot.gpp = plot.flux.time("Lia", "GPP", -70, 80, "Gross primary productivity (GPP)")
+lia.plot.er = plot.flux.time("Lia", "ER", "05:20", -70, 80, "Ecosystem respiration (ER)")
+lia.plot.gpp = plot.flux.time("Lia", "GPP", "05:20", -70, 80, "Gross primary productivity (GPP)")
 lia.plot.par = plot.par.time("Lia")
 
 lia.plot.gpp + lia.plot.par + lia.plot.er +
