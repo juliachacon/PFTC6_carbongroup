@@ -31,6 +31,27 @@ knitr::kable(cflux_dic)
 <!-- # graph -->
 <!-- ``` -->
 
+# Future potential of the data
+
+Note: those data are representative of a single point in the season (close to peak productivity), but not necessarily representative of the entire season or annual carbon balance.
+<!-- ## Comparison with daily point measurements -->
+
+ - How is the mean and/or median comparing to the calculated 24h fluxes?
+ - How much is the peak measurement (usual method) deviating from the calculated 24h fluxes?
+ - Temperature response curves, species composition of turfs (group 3)
+ - SLA / LMA to explain GPP with transplant treatment (or any other proxy of biomass)
+ - Impacts of traits on flux through 24h
+ - Greater diversity leading to greater productivity? Does this hold for transplants?
+ - Legacy effect versus adaptation on fluxes: is the transplant behaving (fluxes wise) more similarly to the local ambient or the origin ambient?
+ - Fluxes related to conditions and altitude gradient:
+    - gradient of temperature
+    - gradient of PAR?? (group 3, we need answers!)
+    - how are those gradients affecting c fluxes? (using ambient turfs)
+    - or is that only an effect of the species composition?
+ - Soil respiration: is photosynthesis or soil respiration the main driver in variation of NEE accross the altitude gradient?
+ - How much are the traits explaining the variability in fluxes? Can the altitude gradient and the transplanting explain more of that variation?
+
+
 # Field measurements
 
 ## Start of 24h campaign
