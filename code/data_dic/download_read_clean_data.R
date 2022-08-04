@@ -41,4 +41,4 @@ get_file(node = "fcbw4",
          path = "clean_data",
          remote_path = "c_flux_data")
 
-cflux_liahovden <- read_csv("clean_data/Three-D_24h-cflux_joasete_2022.csv", col_types = "ffdddTtd")
+cflux_joasete <- read_csv("clean_data/Three-D_24h-cflux_joasete_2022.csv", col_types = "ffdddTtd")
