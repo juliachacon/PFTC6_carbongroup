@@ -8,18 +8,24 @@ get_file(node = "pk4bg",
 
 meta_seedclim <- tibble(
   turfID = c("TTC 101", "TTC 110", "TTC 115", "TTC 146", "TTC 140", "TTC 141"),
-  site = c("hogsete", "hogsete", "hogsete", "vikesland", "vikesland", "vikesland"),
+  origin = c("hogsete", "hogsete", "hogsete", "vikesland", "vikesland", "vikesland"),
+  destination = c("hogsete", "hogsete", "hogsete", "vikesland", "vikesland", "vikesland"),
   warming = "ambient"
 )
 
 metaturf <- read_csv("raw_data/Three-D_metaturfID.csv") %>% 
-  select(warming, origSiteID, turfID) %>% 
+  select(warming, origSiteID, turfID, destSiteID) %>% 
   rename(
-    site = origSiteID
+    origin = origSiteID,
+    destination = destSiteID
   ) %>% 
   mutate(
-    site = str_replace_all(
-      site,
+    origin = str_replace_all(
+      origin,
+      c("Lia" = "liahovden" , "Joa" = "joasete", "Vik" = "vikesland")
+    ),
+    destination = str_replace_all(
+      destination,
       c("Lia" = "liahovden" , "Joa" = "joasete", "Vik" = "vikesland")
     ),
     warming = str_replace_all(
