@@ -3,8 +3,10 @@
 
 source("code/functions.R")
 
-library("dataDownloader")
+# remotes::install_github("nyuglobalties/osfr@fix/use-wb-asset-id")
+# remotes::install_github("Between-the-Fjords/dataDownloader")
 
+library("dataDownloader")
 library("tidyverse")
 library("scales")
 
