@@ -17,17 +17,20 @@ meta_seedclim <- tibble(
 
 # Join all the data together ----
 cflux_all = cflux_vikesland %>%
+  bind_rows(cflux_joasete) %>%
+  rename(flux_old = flux, flux = flux_corrected) %>%
   bind_rows(cflux_hogsete) %>%
   bind_rows(cflux_liahovden) %>%
-  bind_rows(cflux_joasete) %>%
   left_join(meta_seedclim) %>%
   mutate(datetime = ymd_hms(datetime),
-         time = as_hms(datetime))
+         time = as_hms(datetime))%>%
+  mutate(destSite.warm = paste(destSiteID, warming),
+         origSite.warm = paste(origSiteID, warming))
 
 colnames(cflux_all)
 
 # Graphing functions ----
-plot.flux.time = function(orig.site, flux.type, starttime, ylim1, ylim2, title) {
+plot.flux.time.site = function(orig.site, flux.type, starttime, ylim1, ylim2, title) {
   
   ggplot(cflux_all %>% filter(destSiteID == orig.site) %>% filter(type == flux.type), 
          aes(y = flux, x = time, color = warming)) +
@@ -44,7 +47,7 @@ plot.flux.time = function(orig.site, flux.type, starttime, ylim1, ylim2, title) 
   labs(title = title, x = "Time") 
 }
 
-plot.par.time = function(dest.site) {
+plot.par.time.site = function(dest.site) {
   ggplot(cflux_all %>% filter(destSiteID == dest.site) %>% filter(type == "GPP"), 
          aes(y = PARavg, x = time)) +
   geom_smooth(method = "loess", span = 1/3, color = "goldenrod1", se = FALSE) +
@@ -58,14 +61,44 @@ plot.par.time = function(dest.site) {
   theme(strip.background = element_blank(),
         strip.text.y = element_blank()
   )+
-  labs(title = "Reflectance (PAR)", x = "") 
+  labs(title = "Light (PAR)", x = "") 
 }
 
 # Make the plots ----
+## All sites together ----
+# Install facetscales if needed
+#devtools::install_github("zeehio/facetscales")
+library(facetscales)
+
+scales_y = list(
+  "ER" = scale_y_continuous(limits = c(-20, 175)),
+  "NPP" = scale_y_continuous(limits = c(20, -175))
+)
+
+ggplot(cflux_all %>% filter(type != "NEE") %>% filter(warming == "A"), 
+       aes(y = flux, x = time, color = origSiteID)) +
+  geom_point() +
+  geom_smooth(method = "loess", span = 0.3) +
+  scale_color_manual(values = c("#005a32", "#238443", "#41ab5d", "#78c679")) +
+  # facet_grid(type ~., scales = "free") +
+  facet_grid_sc(rows = vars(type), scales = list(y = scales_y)) +
+  theme_bw() +
+  labs(x = "Time") 
+
+ggplot(cflux_all %>% filter(type != "NEE") %>% filter(warming == "A"), 
+       aes(y = flux, x = time, color = origSiteID, shape = warming)) +
+  geom_point() +
+  geom_smooth(method = "loess", span = 0.3, aes(linetype = warming)) +
+  scale_color_manual(values = c("#005a32", "#238443", "#41ab5d", "#78c679")) +
+  scale_linetype_manual(values = c("solid", "dotdash")) +
+  facet_grid(type ~., scales = "free") +
+  theme_bw() +
+  labs(x = "Time") 
+
 ## Vikesland ----
-vik.plot.er = plot.flux.time("Vik", "ER", "21:10", -70, 80, "Ecosystem respiration (ER)")
-vik.plot.gpp = plot.flux.time("Vik", "GPP", "21:10", -70, 80, "Gross primary productivity (GPP)")
-vik.plot.par = plot.par.time("Vik")
+vik.plot.er = plot.flux.time.site("Vik", "ER", "21:10", -70, 80, "Ecosystem respiration (ER)")
+vik.plot.gpp = plot.flux.time.site("Vik", "GPP", "21:10", -70, 80, "Gross primary productivity (GPP)")
+vik.plot.par = plot.par.time.site("Vik")
 
 vik.plot.gpp + vik.plot.par + vik.plot.er +
   plot_layout(ncol = 1, heights = c(2, 1, 2)) +
@@ -75,9 +108,9 @@ png("visualizations/flux_PAR_Vik.png", res = 300, units = "in", width = 10, heig
 dev.off()
 
 ## Hogsete ----
-hog.plot.er = plot.flux.time("Hog", "ER", "22:30", -70, 80, "Ecosystem respiration (ER)")
-hog.plot.gpp = plot.flux.time("Hog", "GPP", "22:30", -70, 80, "Gross primary productivity (GPP)")
-hog.plot.par = plot.par.time("Hog")
+hog.plot.er = plot.flux.time.site("Hog", "ER", "22:30", -70, 80, "Ecosystem respiration (ER)")
+hog.plot.gpp = plot.flux.time.site("Hog", "GPP", "22:30", -70, 80, "Gross primary productivity (GPP)")
+hog.plot.par = plot.par.time.site("Hog")
 
 hog.plot.gpp + hog.plot.par + hog.plot.er +
   plot_layout(ncol = 1, heights = c(2, 1, 2)) +
@@ -87,11 +120,11 @@ png("visualizations/flux_PAR_Hog.png", res = 300, units = "in", width = 10, heig
 dev.off()
 
 ## Joasete ----
-joa.plot.er = plot.flux.time("Joa", "ER", "07:00", -70, 80, "Ecosystem respiration (ER)") +
+joa.plot.er = plot.flux.time.site("Joa", "ER", "07:00", -70, 80, "Ecosystem respiration (ER)") +
   geom_vline(xintercept = lubridate::hm("04:00"), linetype = "dotted") 
-joa.plot.gpp = plot.flux.time("Joa", "GPP", "07:00", -70, 80, "Gross primary productivity (GPP)") +
+joa.plot.gpp = plot.flux.time.site("Joa", "GPP", "07:00", -70, 80, "Gross primary productivity (GPP)") +
   geom_vline(xintercept = lubridate::hm("04:00"), linetype = "dotted") 
-joa.plot.par = plot.par.time("Joa")
+joa.plot.par = plot.par.time.site("Joa")
 
 joa.plot.gpp + joa.plot.par + joa.plot.er +
   plot_layout(ncol = 1, heights = c(2, 1, 2)) +
@@ -101,9 +134,9 @@ png("visualizations/flux_PAR_Joa.png", res = 300, units = "in", width = 10, heig
 dev.off()
 
 ## Liahovden ----
-lia.plot.er = plot.flux.time("Lia", "ER", "05:20", -70, 80, "Ecosystem respiration (ER)")
-lia.plot.gpp = plot.flux.time("Lia", "GPP", "05:20", -70, 80, "Gross primary productivity (GPP)")
-lia.plot.par = plot.par.time("Lia")
+lia.plot.er = plot.flux.time.site("Lia", "ER", "05:20", -70, 80, "Ecosystem respiration (ER)")
+lia.plot.gpp = plot.flux.time.site("Lia", "GPP", "05:20", -70, 80, "Gross primary productivity (GPP)")
+lia.plot.par = plot.par.time.site("Lia")
 
 lia.plot.gpp + lia.plot.par + lia.plot.er +
   plot_layout(ncol = 1, heights = c(2, 1, 2)) +
