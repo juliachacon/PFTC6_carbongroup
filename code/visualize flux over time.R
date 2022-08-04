@@ -24,8 +24,11 @@ cflux_all = cflux_vikesland %>%
   left_join(meta_seedclim) %>%
   mutate(datetime = ymd_hms(datetime),
          time = as_hms(datetime))%>%
-  mutate(destSite.warm = paste(destSiteID, warming),
-         origSite.warm = paste(origSiteID, warming))
+  mutate(destSiteID = factor(destSiteID, levels = c("Lia", "Joa", "Hog", "Vik"), 
+                             labels = c("Liahovden", "Joasete", "Hogsete", "Vikesland")),
+         origSiteID = factor(origSiteID, levels = c("Lia", "Joa", "Hog", "Vik"), 
+                           labels = c("Liahovden", "Joasete", "Hogsete", "Vikesland")))
+
 
 colnames(cflux_all)
 
@@ -66,22 +69,22 @@ plot.par.time.site = function(dest.site) {
 
 # Make the plots ----
 ## All sites together ----
-# Install facetscales if needed
-#devtools::install_github("zeehio/facetscales")
-library(facetscales)
 
-scales_y = list(
-  "ER" = scale_y_continuous(limits = c(-20, 175)),
-  "NPP" = scale_y_continuous(limits = c(20, -175))
-)
-
-ggplot(cflux_all %>% filter(type != "NEE") %>% filter(warming == "A"), 
+ggplot(cflux_all %>% filter(type == "ER") %>% filter(warming == "A"), 
        aes(y = flux, x = time, color = origSiteID)) +
   geom_point() +
   geom_smooth(method = "loess", span = 0.3) +
   scale_color_manual(values = c("#005a32", "#238443", "#41ab5d", "#78c679")) +
-  # facet_grid(type ~., scales = "free") +
-  facet_grid_sc(rows = vars(type), scales = list(y = scales_y)) +
+  ylim(-20, 175) +
+  theme_bw() +
+  labs(x = "Time") 
+
+ggplot(cflux_all %>% filter(type == "GPP") %>% filter(warming == "A"), 
+       aes(y = flux, x = time, color = origSiteID)) +
+  geom_point() +
+  geom_smooth(method = "loess", span = 0.3) +
+  scale_color_manual(values = c("#005a32", "#238443", "#41ab5d", "#78c679")) +
+  ylim(20, -175) +
   theme_bw() +
   labs(x = "Time") 
 
